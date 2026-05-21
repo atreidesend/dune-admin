@@ -1,0 +1,181 @@
+package main
+
+import (
+	"embed"
+	"encoding/json"
+	"fmt"
+	"io/fs"
+	"log"
+	"net/http"
+)
+
+//go:embed web/dist
+var staticFiles embed.FS
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func startServer(addr string) {
+	mux := http.NewServeMux()
+
+	// ── status ────────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/status", handleStatus)
+	mux.HandleFunc("POST /api/v1/reconnect", handleReconnect)
+
+	// ── battlegroup ───────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/battlegroup/status", handleBGStatus)
+	mux.HandleFunc("POST /api/v1/battlegroup/exec", handleBGExec)
+	mux.HandleFunc("GET /api/v1/battlegroup/pods", handleBGPods)
+
+	// ── players ───────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/players", handleGetPlayers)
+	mux.HandleFunc("GET /api/v1/players/online", handleGetOnlineState)
+	mux.HandleFunc("GET /api/v1/players/currency", handleGetCurrency)
+	mux.HandleFunc("GET /api/v1/players/factions", handleGetFactions)
+	mux.HandleFunc("GET /api/v1/players/specs", handleGetSpecs)
+	mux.HandleFunc("GET /api/v1/players/templates", handleGetTemplates)
+	mux.HandleFunc("GET /api/v1/players/{id}/inventory", handleGetInventory)
+	mux.HandleFunc("GET /api/v1/players/{id}/journey", handleGetJourney)
+	mux.HandleFunc("POST /api/v1/players/give-item", handleGiveItem)
+	mux.HandleFunc("POST /api/v1/players/give-currency", handleGiveCurrency)
+	mux.HandleFunc("POST /api/v1/players/grant-live", handleGrantLive)
+	mux.HandleFunc("POST /api/v1/players/give-faction-rep", handleGiveFactionRep)
+	mux.HandleFunc("POST /api/v1/players/give-scrip", handleGiveScrip)
+	mux.HandleFunc("POST /api/v1/players/award-xp", handleAwardXP)
+	mux.HandleFunc("POST /api/v1/players/award-char-xp", handleAwardCharXP)
+	mux.HandleFunc("POST /api/v1/players/award-intel", handleAwardIntel)
+	mux.HandleFunc("POST /api/v1/players/kick", handleKick)
+	mux.HandleFunc("DELETE /api/v1/players/item/{id}", handleDeleteItem)
+	mux.HandleFunc("POST /api/v1/players/reset-spec", handleResetSpec)
+	mux.HandleFunc("POST /api/v1/players/set-faction-tier", handleSetFactionTier)
+	mux.HandleFunc("POST /api/v1/players/journey/complete", handleJourneyComplete)
+	mux.HandleFunc("POST /api/v1/players/journey/reset", handleJourneyReset)
+	mux.HandleFunc("POST /api/v1/players/journey/wipe", handleJourneyWipe)
+	mux.HandleFunc("POST /api/v1/players/delete-tutorials", handleDeleteTutorials)
+	mux.HandleFunc("POST /api/v1/players/wipe-codex", handleWipeCodex)
+	mux.HandleFunc("GET /api/v1/players/{id}/char-xp", handleGetCharXP)
+	mux.HandleFunc("GET /api/v1/players/{id}/specs", handleGetPlayerSpecs)
+	mux.HandleFunc("POST /api/v1/players/set-spec-xp", handleSetSpecXP)
+	mux.HandleFunc("GET /api/v1/players/{id}/vehicles", handleGetPlayerVehicles)
+	mux.HandleFunc("POST /api/v1/players/repair-item", handleRepairItem)
+	mux.HandleFunc("GET /api/v1/players/partitions", handleGetPartitions)
+	mux.HandleFunc("POST /api/v1/players/teleport", handleTeleportPlayer)
+	mux.HandleFunc("GET /api/v1/players/{id}/events", handleGetPlayerEvents)
+	mux.HandleFunc("GET /api/v1/players/{id}/dungeons", handleGetPlayerDungeons)
+
+	// ── database ──────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/database/tables", handleDBTables)
+	mux.HandleFunc("GET /api/v1/database/describe", handleDBDescribe)
+	mux.HandleFunc("GET /api/v1/database/sample", handleDBSample)
+	mux.HandleFunc("GET /api/v1/database/search", handleDBSearch)
+	mux.HandleFunc("POST /api/v1/database/sql", handleDBSQL)
+
+	// ── logs ──────────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/logs/pods", handleLogPods)
+	mux.HandleFunc("GET /api/v1/logs/stream", handleLogStream)
+	mux.HandleFunc("GET /api/v1/logs/cheats", handleGetCheatLog)
+
+	// ── notifications ────────────────────────────────────────────────────────
+	mux.HandleFunc("POST /api/v1/notify", handleNotify)
+
+	// ── storage ───────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/storage", handleListStorage)
+	mux.HandleFunc("GET /api/v1/storage/{id}/items", handleGetStorageItems)
+	mux.HandleFunc("POST /api/v1/storage/{id}/give-item", handleGiveItemToStorage)
+
+	// ── blueprints ────────────────────────────────────────────────────────────
+	mux.HandleFunc("GET /api/v1/blueprints", handleListBlueprints)
+	mux.HandleFunc("GET /api/v1/blueprints/{id}/export", handleExportBlueprint)
+	mux.HandleFunc("POST /api/v1/blueprints/import", handleImportBlueprint)
+
+	// ── SPA ───────────────────────────────────────────────────────────────────
+	sub, err := fs.Sub(staticFiles, "web/dist")
+	if err != nil {
+		log.Fatal("embed:", err)
+	}
+	mux.Handle("/", spaHandler{fs: http.FS(sub)})
+
+	log.Printf("dune-admin listening on http://localhost%s", addr)
+	log.Fatal(http.ListenAndServe(addr, corsMiddleware(mux)))
+}
+
+// spaHandler serves static files and falls back to index.html for SPA routing.
+type spaHandler struct{ fs http.FileSystem }
+
+func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	f, err := h.fs.Open(r.URL.Path)
+	if err != nil {
+		// File not found — serve index.html for client-side routing.
+		r.URL.Path = "/"
+		f2, err2 := h.fs.Open("/")
+		if err2 != nil {
+			http.Error(w, "not found", 404)
+			return
+		}
+		f2.Close()
+		http.FileServer(h.fs).ServeHTTP(w, r)
+		return
+	}
+	f.Close()
+	http.FileServer(h.fs).ServeHTTP(w, r)
+}
+
+// ── JSON helpers ──────────────────────────────────────────────────────────────
+
+func jsonOK(w http.ResponseWriter, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(v)
+}
+
+func jsonErr(w http.ResponseWriter, err error, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+}
+
+func decode(r *http.Request, v any) error {
+	return json.NewDecoder(r.Body).Decode(v)
+}
+
+// handleStatus returns SSH and DB connection state.
+func handleStatus(w http.ResponseWriter, r *http.Request) {
+	jsonOK(w, map[string]any{
+		"ssh_connected": globalSSH != nil,
+		"db_connected":  globalDB != nil,
+		"pod_ns":        globalPodNS,
+		"pod_ip":        globalPodIP,
+		"ssh_host":      sshHost,
+	})
+}
+
+// handleReconnect attempts to re-establish SSH+DB connections.
+func handleReconnect(w http.ResponseWriter, r *http.Request) {
+	if globalDB != nil {
+		globalDB.Close()
+		globalDB = nil
+	}
+	if globalSSH != nil {
+		globalSSH.Close()
+		globalSSH = nil
+	}
+	msg, ok := cmdConnect().(msgConnect)
+	if !ok || msg.err != nil {
+		var errMsg string
+		if msg.err != nil {
+			errMsg = msg.err.Error()
+		}
+		jsonErr(w, fmt.Errorf("%s", errMsg), 500)
+		return
+	}
+	handleStatus(w, r)
+}

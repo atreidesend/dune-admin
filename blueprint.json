@@ -1,0 +1,1700 @@
+{
+  "instances": [
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 0,
+      "y": 1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 0,
+      "y": 512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -512,
+      "y": 1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -1024.0009765625,
+      "y": 1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -512,
+      "y": 512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -512,
+      "y": 0,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -512,
+      "y": -512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -512.0009765625,
+      "y": -1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -1024.0009765625,
+      "y": -1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 0,
+      "y": -512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": -0.0010000000474974513,
+      "y": -1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 511.9989929199219,
+      "y": -1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 512,
+      "y": -512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 512,
+      "y": 0,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 512,
+      "y": 512,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 512,
+      "y": 1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Foundation",
+      "x": 1024,
+      "y": 1024,
+      "z": 0,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Stairs",
+      "x": 1024,
+      "y": 0,
+      "z": 0,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Stairs",
+      "x": 511.9989929199219,
+      "y": -1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Stairs",
+      "x": -512,
+      "y": -1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Ramp",
+      "x": 1024,
+      "y": -512,
+      "z": 0,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Ramp",
+      "x": 1024,
+      "y": 512,
+      "z": 0,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Ramp",
+      "x": -1024,
+      "y": 512,
+      "z": 0,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Ramp",
+      "x": -1024,
+      "y": 0,
+      "z": 0,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Ramp",
+      "x": -1024,
+      "y": -512,
+      "z": 0,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 1536,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 512,
+      "y": 1280,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 512,
+      "y": 1280,
+      "z": 1536,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512,
+      "y": 1280,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512,
+      "y": 1280,
+      "z": 1536,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 1536,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 512,
+      "y": 1280,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": 512,
+      "y": 1280,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512,
+      "y": 1280,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_02",
+      "x": -512,
+      "y": 1280,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 768,
+      "y": 1024,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1023.9990234375,
+      "y": 768,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1023.9990234375,
+      "y": -768,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 767.9990234375,
+      "y": -1024,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -768.0009765625,
+      "y": -1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1024.0009765625,
+      "y": -768,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1024.0009765625,
+      "y": 768,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -768,
+      "y": 1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1023.9990234375,
+      "y": -1280,
+      "z": 1728,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1279.9990234375,
+      "y": -1024,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1279.9990234375,
+      "y": 1024,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": 1023.9990234375,
+      "y": 1280,
+      "z": 1728,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1024,
+      "y": 1280,
+      "z": 1728,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1280,
+      "y": 1024,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1280.0009765625,
+      "y": -1024,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_03",
+      "x": -1024.0009765625,
+      "y": -1280,
+      "z": 1728,
+      "rotation": -180
+    },
+    {
+      "building_type": "MTX_Atreides_Outpost_Bookshelf",
+      "x": -512.0009765625,
+      "y": -768,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "MTX_Atreides_Outpost_Bookshelf",
+      "x": 512,
+      "y": -768,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing_Gate",
+      "x": -256.0010070800781,
+      "y": -1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing_Gate",
+      "x": 0,
+      "y": 256,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "MTX_Atre_BreakfastRoom_Floor",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "MTX_Atre_BreakfastRoom_Floor",
+      "x": 1024,
+      "y": 0,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Stairs_Half",
+      "x": 1024,
+      "y": -512,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Stairs_Half",
+      "x": 1023.9990234375,
+      "y": 512,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": 512,
+      "z": 960,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": -511.9989929199219,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 512,
+      "y": -512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 512,
+      "y": 0,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.9989929199219,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.9989929199219,
+      "y": 1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0010000000474974513,
+      "y": 1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": 1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0010000000474974513,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 0,
+      "y": 0,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 0,
+      "y": -512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512,
+      "y": -1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0010000000474974513,
+      "y": -1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512,
+      "y": -512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512,
+      "y": 0,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": 0.0010000000474974513,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": 0,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": -512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": 0,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": 512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": -512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": 1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": 512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": 0,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -512.0009765625,
+      "y": -512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0010000000474974513,
+      "y": -512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0020000000949949026,
+      "y": -1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0010000000474974513,
+      "y": 0,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0020000000949949026,
+      "y": 512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -0.0020000000949949026,
+      "y": 1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.99798583984375,
+      "y": 1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.99798583984375,
+      "y": 512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.99798583984375,
+      "y": 0,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.9989929199219,
+      "y": -512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 511.9989929199219,
+      "y": -1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": 512,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": 1024,
+      "z": 1344,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 1344,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024.0009765625,
+      "y": -1024,
+      "z": 1344,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor",
+      "x": -1024,
+      "y": 1024,
+      "z": 1344,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 768,
+      "y": 1024,
+      "z": 768,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -768,
+      "y": 1024,
+      "z": 768,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -768.0009765625,
+      "y": -1024,
+      "z": 768,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -512.0009765625,
+      "y": -768,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 511.9989929199219,
+      "y": 768,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -0.0010000000474974513,
+      "y": 768,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -512.0009765625,
+      "y": 768,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -0.0010000000474974513,
+      "y": -768,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 511.9989929199219,
+      "y": -768,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 767.9990234375,
+      "y": 512,
+      "z": 768,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 768,
+      "y": 0,
+      "z": 768,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 768,
+      "y": -512,
+      "z": 768,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 1279.9990234375,
+      "y": -1024,
+      "z": 1152,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 1023.9990234375,
+      "y": -1280,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 1023.9990234375,
+      "y": 768,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -1024,
+      "y": -768,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -512,
+      "y": 1280,
+      "z": 1920,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 0,
+      "y": 1280,
+      "z": 1920,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 512,
+      "y": 1280,
+      "z": 1920,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 1920,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 1920,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 1920,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Half",
+      "x": -1024.0009765625,
+      "y": 768,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": 768,
+      "y": -512,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": 767.9990234375,
+      "y": 512,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": -768.0009765625,
+      "y": 512,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": -768,
+      "y": -512,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": -1280,
+      "y": 512,
+      "z": 1344,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": -1280,
+      "y": 0,
+      "z": 1344,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": -1280,
+      "y": -512,
+      "z": 1344,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": 1279.9990234375,
+      "y": -512,
+      "z": 1344,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": 1279.9990234375,
+      "y": 0,
+      "z": 1344,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_03",
+      "x": 1279.9990234375,
+      "y": 512,
+      "z": 1344,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_PrudenceDoor_Frame",
+      "x": 768,
+      "y": 0,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_PrudenceDoor_Frame",
+      "x": -768,
+      "y": 0,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_04",
+      "x": 1023.9990234375,
+      "y": -1280,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_04",
+      "x": 1279.9990234375,
+      "y": -1024,
+      "z": 768,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_04",
+      "x": 1279.9990234375,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Window_04",
+      "x": 1023.9990234375,
+      "y": 768,
+      "z": 960,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 767.9990234375,
+      "y": 512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 1280,
+      "y": 0,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 1279.9990234375,
+      "y": -512,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 768,
+      "y": -512,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 767.9990234375,
+      "y": 1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 255.99899291992188,
+      "y": -1024,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 511.9989929199219,
+      "y": -768,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": -768.0009765625,
+      "y": 1024,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": -768,
+      "y": -1024,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 1279.9990234375,
+      "y": -512,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 1279.9990234375,
+      "y": 0,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": 1279.9990234375,
+      "y": 512,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": -1280,
+      "y": 512,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": -1280,
+      "y": 0,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_01",
+      "x": -1280,
+      "y": -512,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Right",
+      "x": 1279.9990234375,
+      "y": -512,
+      "z": 768,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Right",
+      "x": 1279.9990234375,
+      "y": 1024,
+      "z": 1152,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Right",
+      "x": -1024,
+      "y": 1280,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Right",
+      "x": -1280,
+      "y": 512,
+      "z": 1152,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Right",
+      "x": -1280,
+      "y": -1024,
+      "z": 1152,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Left",
+      "x": 1279.9990234375,
+      "y": 512,
+      "z": 768,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Left",
+      "x": 1023.9990234375,
+      "y": 1280,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Left",
+      "x": -1280,
+      "y": 1024,
+      "z": 1152,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Left",
+      "x": -1280,
+      "y": -512,
+      "z": 1152,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Top_Half_Left",
+      "x": -1024.0009765625,
+      "y": -1280,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": -1024,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1023.9990234375,
+      "y": -1280,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1024,
+      "y": 1280,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1280,
+      "y": 1024,
+      "z": 384,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": 768,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": -768,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -512,
+      "y": 256,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 512,
+      "y": 256,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -512.0009765625,
+      "y": -768,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -256.00201416015625,
+      "y": -1024,
+      "z": 1344,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": 768,
+      "z": 960,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280.0009765625,
+      "y": 512,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": 0.0010000000474974513,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": -511.9989929199219,
+      "z": 960,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": -767.9990234375,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1023.9990234375,
+      "y": -1280,
+      "z": 2112,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 511.9989929199219,
+      "y": -1280,
+      "z": 2112,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 2112,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -512.0009765625,
+      "y": -1280,
+      "z": 2112,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": -1280,
+      "z": 2112,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280.0009765625,
+      "y": -1024,
+      "z": 2112,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": -512,
+      "z": 2112,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": 0,
+      "z": 2112,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": 512,
+      "z": 2112,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": 1024,
+      "z": 2112,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024,
+      "y": 1280,
+      "z": 2112,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -512,
+      "y": 1280,
+      "z": 2112,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 0,
+      "y": 1280,
+      "z": 2112,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 512,
+      "y": 1280,
+      "z": 2112,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1023.9990234375,
+      "y": 1280,
+      "z": 2112,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": 1024,
+      "z": 2112,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": 512,
+      "z": 2112,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": 0,
+      "z": 2112,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": -512,
+      "z": 2112,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": 1279.9990234375,
+      "y": -1024,
+      "z": 2112,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": 1280,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280,
+      "y": 1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1280.0009765625,
+      "y": -1024,
+      "z": 384,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing",
+      "x": -1024.0009765625,
+      "y": -1280,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Column",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Passageway",
+      "x": 768,
+      "y": 0,
+      "z": 960,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Passageway",
+      "x": 1024,
+      "y": -256,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Passageway",
+      "x": -0.0010000000474974513,
+      "y": -768,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": 0,
+      "y": 1280,
+      "z": 1152,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 1536,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 1152,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 768,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": 0,
+      "y": 1280,
+      "z": 768,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": -0.0010000000474974513,
+      "y": -1280,
+      "z": 384,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": 0,
+      "y": 1280,
+      "z": 384,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_04",
+      "x": 0,
+      "y": 1280,
+      "z": 1536,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Triangle_Bottom_Right",
+      "x": -512,
+      "y": -768,
+      "z": 960,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Railing_Inclined",
+      "x": -512,
+      "y": -768,
+      "z": 960,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Round_Corner_03",
+      "x": 1023.9990234375,
+      "y": 1024,
+      "z": 1344,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Round_Corner_03",
+      "x": -1024,
+      "y": 1024,
+      "z": 1344,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Round_Corner_03",
+      "x": -1024.0009765625,
+      "y": -1024,
+      "z": 1344,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Wall_Round_Corner_03",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 1344,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor_Round_Corner_Inverted",
+      "x": -1024,
+      "y": 1024,
+      "z": 1728,
+      "rotation": 90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor_Round_Corner_Inverted",
+      "x": -1024.0009765625,
+      "y": -1024,
+      "z": 1728,
+      "rotation": -180
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor_Round_Corner_Inverted",
+      "x": 1023.9990234375,
+      "y": -1024,
+      "z": 1728,
+      "rotation": -90
+    },
+    {
+      "building_type": "Atreides_Outpost_Floor_Round_Corner_Inverted",
+      "x": 1023.9990234375,
+      "y": 1024,
+      "z": 1728,
+      "rotation": 0
+    },
+    {
+      "building_type": "Atreides_Outpost_Roof_Cover_Top_Half_Left",
+      "x": -1024.0009765625,
+      "y": -256,
+      "z": 1152,
+      "rotation": -180
+    }
+  ],
+  "placeables": [
+    {
+      "building_type": "SurvivalFabricator_Placeable",
+      "x": -149.54800415039062,
+      "y": 968.9539794921875,
+      "z": 386,
+      "ry": 180
+    },
+    {
+      "building_type": "Recycler_Placeable",
+      "x": -511.78900146484375,
+      "y": 995.8259887695312,
+      "z": 386,
+      "ry": 180
+    },
+    {
+      "building_type": "Generator_Placeable",
+      "x": 458.1199951171875,
+      "y": 716.458984375,
+      "z": 962.0280151367188,
+      "ry": 90
+    },
+    {
+      "building_type": "Generator_Placeable",
+      "x": 149.9320068359375,
+      "y": 696.3259887695312,
+      "z": 962.0280151367188,
+      "ry": 90
+    },
+    {
+      "building_type": "Generator_Placeable",
+      "x": -389.78900146484375,
+      "y": 808.7100219726562,
+      "z": 962.0280151367188,
+      "ry": -90
+    },
+    {
+      "building_type": "Choam_PentashieldSurfaceVertical_Placeable",
+      "x": -768,
+      "y": 0,
+      "z": 384,
+      "ry": -90
+    },
+    {
+      "building_type": "Choam_PentashieldSurfaceHorizontal_Placeable",
+      "x": -0.0010000000474974513,
+      "y": 0,
+      "z": 2112,
+      "ry": 180
+    }
+  ]
+}

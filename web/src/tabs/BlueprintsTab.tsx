@@ -1,0 +1,194 @@
+import { useState, useEffect } from 'react'
+import { Button, Modal, Spinner, toast, Label } from '@heroui/react'
+import { api } from '../api/client'
+import type { BlueprintRow } from '../api/client'
+
+export default function BlueprintsTab() {
+  const [blueprints, setBlueprints] = useState<BlueprintRow[]>([])
+  const [loading, setLoading] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const data = await api.blueprints.list()
+      setBlueprints(data)
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      toast.danger(`Failed to load blueprints: ${msg}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '16px' }}>
+      <div className="flex items-center justify-between shrink-0">
+        <div>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--color-primary)' }}>
+            Blueprints
+          </h2>
+          <p className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+            Manage saved base blueprints. Export or import player constructions.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onPress={load} isDisabled={loading}>
+            {loading ? <Spinner size="sm" color="current" /> : null}
+            Refresh
+          </Button>
+          <Button size="sm" onPress={() => setShowImport(true)}>
+            Import Blueprint
+          </Button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <div className="rounded-lg" style={{ flex: 1, minHeight: 0, overflowY: 'auto', border: '1px solid #2a2418' }}>
+          <table className="w-full text-sm">
+              <thead style={{ position: 'sticky', top: 0, zIndex: 1, background: '#1a1610' }}>
+                <tr style={{ borderBottom: '1px solid #2a2418' }}>
+                  {['ID', 'Owner', 'Item ID', 'Pieces', 'Placeables', 'Actions'].map(h => (
+                    <th key={h} className="text-left px-4 py-2 font-semibold text-xs uppercase tracking-wide" style={{ color: 'var(--color-primary)' }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {blueprints.map((bp, i) => (
+                  <tr key={bp.id} style={{ borderBottom: '1px solid #1a1610', background: i % 2 === 0 ? '#0d0b07' : '#111009' }}>
+                    <td className="px-4 py-2 font-mono text-xs" style={{ color: 'var(--color-text)' }}>{bp.id}</td>
+                    <td className="px-4 py-2 text-xs" style={{ color: 'var(--color-text)' }}>{bp.owner_name}</td>
+                    <td className="px-4 py-2 font-mono text-xs" style={{ color: 'var(--color-text-dim)' }}>{bp.item_id}</td>
+                    <td className="px-4 py-2 text-xs" style={{ color: 'var(--color-text-dim)' }}>{bp.pieces}</td>
+                    <td className="px-4 py-2 text-xs" style={{ color: 'var(--color-text-dim)' }}>{bp.placeables}</td>
+                    <td className="px-4 py-2">
+                      <a
+                        href={api.blueprints.exportUrl(bp.id)}
+                        download={`blueprint-${bp.id}-${bp.owner_name}.json`}
+                      >
+                        <Button size="sm" variant="outline">
+                          Export
+                        </Button>
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+                {blueprints.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                      No blueprints found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      <ImportModal
+        open={showImport}
+        onClose={() => setShowImport(false)}
+        onSuccess={() => { setShowImport(false); load() }}
+        players={[]}
+      />
+    </div>
+  )
+}
+
+function ImportModal({
+  open,
+  onClose,
+  onSuccess,
+}: {
+  open: boolean
+  onClose: () => void
+  onSuccess: () => void
+  players: { id: number; name: string }[]
+}) {
+  const [file, setFile] = useState<File | null>(null)
+  const [playerId, setPlayerId] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!file) { toast.warning('Select a blueprint file'); return }
+    const pid = Number(playerId)
+    if (!pid) { toast.warning('Enter a valid player ID'); return }
+    setSubmitting(true)
+    try {
+      const res = await api.blueprints.import(file, pid)
+      if (res.ok) {
+        toast.success('Blueprint imported successfully')
+        onSuccess()
+      } else {
+        toast.danger(`Import failed: ${res.error ?? 'unknown error'}`)
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      toast.danger(`Import failed: ${msg}`)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Modal>
+      <Modal.Backdrop isOpen={open} onOpenChange={v => !v && onClose()}>
+        <Modal.Container>
+          <Modal.Dialog>
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Import Blueprint</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                    Blueprint File (.json)
+                  </Label>
+                  <input
+                    type="file"
+                    accept=".json"
+                    className="text-sm"
+                    style={{ color: 'var(--color-text)' }}
+                    onChange={e => setFile(e.target.files?.[0] ?? null)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
+                    Player ID
+                  </Label>
+                  <input
+                    className="rounded px-3 py-1.5 text-sm border"
+                    style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }}
+                    type="number"
+                    value={playerId}
+                    onChange={e => setPlayerId(e.target.value)}
+                    placeholder="e.g. 12345"
+                  />
+                </div>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="tertiary" onPress={onClose}>Cancel</Button>
+              <Button onPress={handleSubmit} isDisabled={submitting || !file}>
+                {submitting ? <Spinner size="sm" color="current" /> : null}
+                Import
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
+  )
+}

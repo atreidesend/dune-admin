@@ -1,0 +1,18 @@
+db-snapshots/
+.env
+settings.local.json
+
+# SSH keys — never commit
+sshKey
+sshKey.pub
+
+# Browser fetch script — local dev tool, not for sharing
+fetch-item-data.js
+
+# Compiled binaries
+dune-admin
+dune-admin-linux
+
+# macOS
+.DS_Store
+**/.DS_Store
