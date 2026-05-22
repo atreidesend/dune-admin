@@ -1921,6 +1921,22 @@ func cmdFetchPlayerSpecs(playerID int64) Cmd {
 	}
 }
 
+func cmdGrantAllKeystones(playerID int64) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgMutate{err: fmt.Errorf("not connected")}
+		}
+		_, err := globalDB.Exec(context.Background(), `
+			INSERT INTO dune.purchased_specialization_keystones (player_id, keystone_id)
+			SELECT $1::bigint, generate_series(1, 205)
+			ON CONFLICT DO NOTHING`, playerID)
+		if err != nil {
+			return msgMutate{err: err}
+		}
+		return msgMutate{ok: fmt.Sprintf("Granted all keystones to player %d", playerID)}
+	}
+}
+
 func cmdFetchPlayerKeystones(playerID int64) Cmd {
 	return func() Msg {
 		if globalDB == nil {

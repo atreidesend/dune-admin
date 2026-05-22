@@ -118,6 +118,8 @@ export const api = {
     keystones: (id: number) => req<KeystoneRow[]>('GET', `/players/${id}/keystones`),
     grantMaxSpec: (player_id: number, track_type: string) =>
       req<MutateResult>('POST', '/players/grant-max-spec', { player_id, track_type }),
+    grantAllKeystones: (player_id: number) =>
+      req<MutateResult>('POST', '/players/grant-all-keystones', { player_id }),
     vehicles: (account_id: number) => req<VehicleRow[]>('GET', `/players/${account_id}/vehicles`),
     repairItem: (id: number) => req<MutateResult>('POST', '/players/repair-item', { id }),
     partitions: () => req<TeleportLocation[]>('GET', '/players/partitions'),

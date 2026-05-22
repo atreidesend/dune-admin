@@ -938,6 +938,13 @@ function PlayerActionsModal({ player, open, onClose }: { player: Player; open: b
                         onPress={() => { setSpecsLoaded(false) }}>
                         {specsLoading ? <Spinner size="sm" color="current" /> : '↻'}
                       </Button>
+                      <Button size="sm" variant="ghost" isDisabled={busy}
+                        onPress={() => run(
+                          () => api.players.grantAllKeystones(player.controller_id),
+                          `Grant all keystones to ${player.name}`
+                        ).then(() => setSpecsLoaded(false))}>
+                        Grant Max Keystones
+                      </Button>
                     </div>
                     {specsLoading ? (
                       <div className="flex justify-center py-8"><Spinner size="lg" /></div>

@@ -568,6 +568,26 @@ func handleGetCharXP(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]any{"xp": msg.xp, "level": msg.level})
 }
 
+func handleGrantAllKeystones(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		PlayerID int64 `json:"player_id"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	msg, ok := cmdGrantAllKeystones(req.PlayerID)().(msgMutate)
+	if !ok {
+		jsonErr(w, fmt.Errorf("internal error"), 500)
+		return
+	}
+	if msg.err != nil {
+		jsonErr(w, msg.err, 500)
+		return
+	}
+	jsonOK(w, map[string]string{"ok": msg.ok})
+}
+
 func handleGetPlayerKeystones(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)

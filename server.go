@@ -61,6 +61,7 @@ func startServer(addr string) {
 	mux.HandleFunc("GET /api/v1/players/{id}/char-xp", handleGetCharXP)
 	mux.HandleFunc("GET /api/v1/players/{id}/specs", handleGetPlayerSpecs)
 	mux.HandleFunc("GET /api/v1/players/{id}/keystones", handleGetPlayerKeystones)
+	mux.HandleFunc("POST /api/v1/players/grant-all-keystones", handleGrantAllKeystones)
 	mux.HandleFunc("POST /api/v1/players/grant-max-spec", handleGrantMaxSpec)
 	mux.HandleFunc("GET /api/v1/players/{id}/vehicles", handleGetPlayerVehicles)
 	mux.HandleFunc("POST /api/v1/players/repair-item", handleRepairItem)
