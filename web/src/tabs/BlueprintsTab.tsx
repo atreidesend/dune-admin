@@ -122,6 +122,7 @@ function ImportModal({
   const [players, setPlayers] = useState<Player[]>([])
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -132,6 +133,14 @@ function ImportModal({
     setSelectedPlayer(null)
     api.players.list().then(setPlayers).catch(() => {})
   }, [open])
+
+  const openDropdown = () => {
+    if (searchRef.current) {
+      const r = searchRef.current.getBoundingClientRect()
+      setDropdownPos({ top: r.bottom + 4, left: r.left, width: r.width })
+    }
+    setShowDropdown(true)
+  }
 
   const filtered = search.trim()
     ? players.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
@@ -180,7 +189,7 @@ function ImportModal({
                     onChange={e => setFile(e.target.files?.[0] ?? null)}
                   />
                 </div>
-                <div className="flex flex-col gap-1" style={{ position: 'relative' }}>
+                <div className="flex flex-col gap-1">
                   <Label className="text-sm" style={{ color: 'var(--color-text-dim)' }}>
                     Player
                   </Label>
@@ -190,30 +199,10 @@ function ImportModal({
                     style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }}
                     placeholder="Search by name…"
                     value={selectedPlayer ? selectedPlayer.name : search}
-                    onChange={e => { setSearch(e.target.value); setSelectedPlayer(null); setShowDropdown(true) }}
-                    onFocus={() => setShowDropdown(true)}
+                    onChange={e => { setSearch(e.target.value); setSelectedPlayer(null); openDropdown() }}
+                    onFocus={openDropdown}
                     onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                   />
-                  {showDropdown && filtered.length > 0 && (
-                    <div style={{
-                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
-                      background: '#0d0b07', border: '1px solid #2a2418', borderRadius: 6,
-                      maxHeight: 200, overflowY: 'auto', marginTop: 2,
-                    }}>
-                      {filtered.slice(0, 20).map(p => (
-                        <div
-                          key={p.id}
-                          onMouseDown={() => { setSelectedPlayer(p); setSearch(''); setShowDropdown(false) }}
-                          style={{ padding: '6px 12px', cursor: 'pointer', borderBottom: '1px solid #1a1610' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#1a1610')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >
-                          <span className="text-sm" style={{ color: 'var(--color-text)' }}>{p.name}</span>
-                          <span className="text-xs ml-2" style={{ color: 'var(--color-text-dim)' }}>#{p.id}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                   {selectedPlayer && (
                     <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-dim)' }}>
                       Actor ID: {selectedPlayer.id}
@@ -229,6 +218,34 @@ function ImportModal({
                 Import
               </Button>
             </Modal.Footer>
+            {showDropdown && filtered.length > 0 && dropdownPos && (
+              <div style={{
+                position: 'fixed',
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                width: dropdownPos.width,
+                zIndex: 9999,
+                background: '#0d0b07',
+                border: '1px solid #2a2418',
+                borderRadius: 6,
+                maxHeight: 220,
+                overflowY: 'auto',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+              }}>
+                {filtered.slice(0, 20).map(p => (
+                  <div
+                    key={p.id}
+                    onMouseDown={() => { setSelectedPlayer(p); setSearch(''); setShowDropdown(false) }}
+                    style={{ padding: '7px 12px', cursor: 'pointer', borderBottom: '1px solid #1a1610' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#1a1610')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <span className="text-sm" style={{ color: 'var(--color-text)' }}>{p.name}</span>
+                    <span className="text-xs ml-2" style={{ color: 'var(--color-text-dim)' }}>#{p.id}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
