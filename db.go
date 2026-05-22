@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -1486,6 +1487,11 @@ func checkPlayerOffline(ctx context.Context, playerID int64) error {
 	err := globalDB.QueryRow(ctx, `
 		SELECT online_status::text FROM dune.player_state
 		WHERE player_pawn_id = $1`, playerID).Scan(&status)
+	if errors.Is(err, pgx.ErrNoRows) {
+		// No player_state row means the player has never connected or their
+		// session record was cleaned up — treat as offline.
+		return nil
+	}
 	if err != nil {
 		return fmt.Errorf("could not check online status: %w", err)
 	}
