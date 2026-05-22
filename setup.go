@@ -5,8 +5,20 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 )
+
+// exitSetup prints a pause prompt on Windows (so the CMD window doesn't vanish
+// before the user can read the error), then exits with the given code.
+func exitSetup(code int) {
+	if runtime.GOOS == "windows" {
+		fmt.Println()
+		fmt.Println("Press Enter to close...")
+		bufio.NewReader(os.Stdin).ReadString('\n')
+	}
+	os.Exit(code)
+}
 
 func runSetup() {
 	r := bufio.NewReader(os.Stdin)
@@ -42,11 +54,11 @@ func runSetup() {
 		sshKeyPath = ask("Path to SSH private key", "")
 		if sshKeyPath == "" {
 			fmt.Fprintln(os.Stderr, "SSH key is required. Aborting.")
-			os.Exit(1)
+			exitSetup(1)
 		}
 		if _, err := os.Stat(sshKeyPath); err != nil {
 			fmt.Fprintf(os.Stderr, "Key not found at %s. Aborting.\n", sshKeyPath)
-			os.Exit(1)
+			exitSetup(1)
 		}
 		keyPath = sshKeyPath
 	} else {
@@ -69,11 +81,15 @@ func runSetup() {
 	if err != nil {
 		fail("SSH failed: " + err.Error())
 		fmt.Println()
+		fmt.Printf("  Attempted:  user=%s  host=%s  key=%s\n", sshUser, sshHost, keyPath)
+		fmt.Println()
 		fmt.Println("  Make sure:")
 		fmt.Println("    - The VM is reachable at the given host:port")
-		fmt.Println("    - The SSH key is authorized on the VM for that user")
+		fmt.Println("    - The correct SSH private key is in the same folder as the binary (named: sshKey)")
+		fmt.Println("    - That key's public key is in ~/.ssh/authorized_keys on the VM")
+		fmt.Println("    - The SSH user matches the account on the VM (default: dune)")
 		fmt.Println("    - The SSH user has passwordless sudo for kubectl")
-		os.Exit(1)
+		exitSetup(1)
 	}
 	ok("SSH connected")
 	fmt.Println()
@@ -86,7 +102,7 @@ func runSetup() {
 		fail("Pod discovery failed: " + err.Error())
 		fmt.Println()
 		fmt.Println("  Make sure the SSH user can run: sudo kubectl get pods -A")
-		os.Exit(1)
+		exitSetup(1)
 	}
 	globalSSH = client
 	globalPodNS = ns
@@ -148,7 +164,7 @@ func runSetup() {
 		discoveredPass = ask("Database password", "")
 		if discoveredPass == "" {
 			fmt.Fprintln(os.Stderr, "Database password is required. Aborting.")
-			os.Exit(1)
+			exitSetup(1)
 		}
 	}
 	fmt.Println()
@@ -162,8 +178,8 @@ func runSetup() {
 	if err != nil {
 		fail("DB connect failed: " + err.Error())
 		fmt.Println()
-		fmt.Println("  The password may be wrong. Re-run 'make setup' to try again.")
-		os.Exit(1)
+		fmt.Println("  The password may be wrong. Delete .env and re-run to try again.")
+		exitSetup(1)
 	}
 	globalDB = pool
 	ok("Database connected as: " + dbUser)
@@ -197,7 +213,7 @@ func runSetup() {
 
 	if err := os.WriteFile(".env", []byte(content), 0600); err != nil {
 		fail("Failed to write .env: " + err.Error())
-		os.Exit(1)
+		exitSetup(1)
 	}
 	ok(".env written (chmod 600)")
 	fmt.Println()
