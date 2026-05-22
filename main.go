@@ -18,6 +18,7 @@ var version = "dev" // set by goreleaser ldflags
 var (
 	captureMode     bool
 	setupMode       bool
+	sqlQuery        string
 	sshHost         string
 	sshUser         string
 	sshKeyPath      string
@@ -89,6 +90,7 @@ func init() {
 	flag.StringVar(&listenAddr, "addr", envOr("LISTEN_ADDR", ":8080"), "HTTP listen address")
 	flag.BoolVar(&captureMode, "capture", false, "Capture RabbitMQ messages (grant + notifications) and print to stdout")
 	flag.BoolVar(&setupMode, "setup", false, "Interactive setup wizard — writes .env from SSH autodiscovery")
+	flag.StringVar(&sqlQuery, "sql", "", "Run a SQL query and print results to stdout, then exit")
 }
 
 func resolveKeyPath() string {
@@ -178,6 +180,21 @@ func main() {
 			os.Exit(1)
 		}
 		runCapture()
+		return
+	}
+
+	if sqlQuery != "" {
+		if msg, ok := cmdConnect().(msgConnect); ok && msg.err != nil {
+			fmt.Fprintln(os.Stderr, "connect:", msg.err)
+			os.Exit(1)
+		}
+		if msg, ok := cmdRunSQL(sqlQuery)().(msgSQL); ok {
+			if msg.err != nil {
+				fmt.Fprintln(os.Stderr, msg.err)
+				os.Exit(1)
+			}
+			fmt.Println(msg.result)
+		}
 		return
 	}
 
