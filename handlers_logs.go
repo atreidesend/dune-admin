@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/gorilla/websocket"
@@ -16,6 +17,12 @@ var wsUpgrader = websocket.Upgrader{
 type logPod struct {
 	Namespace string `json:"namespace"`
 	Name      string `json:"name"`
+}
+
+var k8sNameRe = regexp.MustCompile(`^[a-z0-9]([a-z0-9\-\.]*[a-z0-9])?$`)
+
+func isValidK8sName(name string) bool {
+	return len(name) > 0 && len(name) <= 253 && k8sNameRe.MatchString(name)
 }
 
 func handleLogPods(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +60,10 @@ func handleLogStream(w http.ResponseWriter, r *http.Request) {
 	pod := r.URL.Query().Get("pod")
 	if ns == "" || pod == "" {
 		http.Error(w, "ns and pod required", 400)
+		return
+	}
+	if !isValidK8sName(ns) || !isValidK8sName(pod) {
+		http.Error(w, "invalid ns or pod name", 400)
 		return
 	}
 

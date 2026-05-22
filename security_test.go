@@ -34,3 +34,33 @@ func TestIsReadOnlySQL(t *testing.T) {
 		})
 	}
 }
+
+func TestIsValidK8sName(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{"valid simple", "my-pod", true},
+		{"valid with numbers", "pod-123", true},
+		{"valid with dots", "my.pod.name", true},
+		{"single char", "a", true},
+		{"two chars", "ab", true},
+		{"empty", "", false},
+		{"starts with dash", "-bad-name", false},
+		{"ends with dash", "bad-name-", false},
+		{"uppercase blocked", "MyPod", false},
+		{"space blocked", "my pod", false},
+		{"semicolon injection", "pod; rm -rf /", false},
+		{"backtick injection", "pod`whoami`", false},
+		{"dollar injection", "pod$(id)", false},
+		{"pipe injection", "pod|cat /etc/passwd", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isValidK8sName(tt.input); got != tt.want {
+				t.Errorf("isValidK8sName(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
