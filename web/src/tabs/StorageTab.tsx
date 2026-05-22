@@ -164,7 +164,10 @@ export default function StorageTab() {
                     {items.map((item, i) => (
                       <tr key={item.id} style={{ borderBottom: '1px solid #1a1610', background: i % 2 === 0 ? '#0d0b07' : '#0f0d09' }}>
                         <td className="px-3 py-1.5 font-mono" style={{ color: 'var(--color-text-dim)' }}>{item.id}</td>
-                        <td className="px-3 py-1.5 font-mono" style={{ color: 'var(--color-text)' }}>{item.template_id}</td>
+                        <td className="px-3 py-1.5">
+                          <div style={{ color: 'var(--color-text)' }}>{item.name || item.template_id}</div>
+                          {item.name && <div className="text-xs font-mono" style={{ color: 'var(--color-text-dim)' }}>{item.template_id}</div>}
+                        </td>
                         <td className="px-3 py-1.5" style={{ color: 'var(--color-text)' }}>{item.stack_size}</td>
                         <td className="px-3 py-1.5" style={{ color: 'var(--color-text)' }}>{item.quality}</td>
                         <td className="px-3 py-1.5" style={{ color: 'var(--color-text-dim)' }}>{item.durability}</td>
