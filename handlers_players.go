@@ -446,6 +446,28 @@ func handleSetFactionTier(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]string{"ok": msg.ok})
 }
 
+func handleProgressionUnlock(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		PlayerID int64  `json:"player_id"`
+		Faction  string `json:"faction"`
+		Preset   string `json:"preset"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	msg, ok := cmdProgressionUnlock(req.PlayerID, req.Faction, req.Preset)().(msgMutate)
+	if !ok {
+		jsonErr(w, fmt.Errorf("internal error"), 500)
+		return
+	}
+	if msg.err != nil {
+		jsonErr(w, msg.err, 500)
+		return
+	}
+	jsonOK(w, map[string]string{"ok": msg.ok})
+}
+
 func handleJourneyComplete(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		AccountID int64  `json:"account_id"`

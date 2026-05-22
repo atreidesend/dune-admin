@@ -1247,6 +1247,120 @@ func cmdWipeJourneyNodes(accountID int64) Cmd {
 	}
 }
 
+// cmdProgressionUnlock atomically completes the journey nodes that
+// BP_ProgressionUnlockComponent sets via AddPlayerFlags, and for the
+// rank19_eligible preset also sets the faction tier to 19.
+//
+// faction: "atreides" | "harkonnen"
+// preset:  "ch3_start" | "rank19_eligible"
+func cmdProgressionUnlock(actorID int64, faction, preset string) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgMutate{err: fmt.Errorf("not connected")}
+		}
+
+		var factionID int16
+		var dialogueFlag string
+		switch faction {
+		case "atreides":
+			factionID = 1
+			dialogueFlag = "DialogueFlags.Factions.SentToMeetHawat"
+		case "harkonnen":
+			factionID = 2
+			dialogueFlag = "DialogueFlags.Factions.SentToPiterDeVries"
+		default:
+			return msgMutate{err: fmt.Errorf("faction must be atreides or harkonnen")}
+		}
+
+		setTier := false
+		switch preset {
+		case "ch3_start":
+		case "rank19_eligible":
+			setTier = true
+		default:
+			return msgMutate{err: fmt.Errorf("preset must be ch3_start or rank19_eligible")}
+		}
+
+		ctx := context.Background()
+
+		var accountID int64
+		err := globalDB.QueryRow(ctx,
+			`SELECT COALESCE(owner_account_id, 0) FROM dune.actors WHERE id = $1`, actorID,
+		).Scan(&accountID)
+		if err != nil || accountID == 0 {
+			return msgMutate{err: fmt.Errorf("player %d not found or has no account", actorID)}
+		}
+
+		nodes := []string{
+			"Contract.Tracking.FactionStory.R4C1Completed",
+			"Contract.Tracking.FactionStory.R4C2Completed",
+			"Contract.Tracking.FactionStory.R4C3Completed",
+			"Contract.Tracking.FactionStory.R4C4Completed",
+			"Contract.Tracking.FactionStory.R4C5Completed",
+			"Contract.Tracking.FactionStory.R4C6Completed",
+			dialogueFlag,
+		}
+		if setTier {
+			nodes = append(nodes, "Journey.LandsraadContractsUnlocked")
+		}
+
+		tx, err := globalDB.Begin(ctx)
+		if err != nil {
+			return msgMutate{err: err}
+		}
+		defer tx.Rollback(ctx)
+
+		for _, nodeID := range nodes {
+			res, err := tx.Exec(ctx, `
+				UPDATE dune.journey_story_node
+				SET complete_condition_state = 'true'::jsonb,
+				    reveal_condition_state   = 'true'::jsonb
+				WHERE account_id = $1
+				  AND (story_node_id = $2 OR story_node_id LIKE $2 || '.%')`,
+				accountID, nodeID)
+			if err != nil {
+				return msgMutate{err: fmt.Errorf("complete node %s: %w", nodeID, err)}
+			}
+			if res.RowsAffected() == 0 {
+				_, err = tx.Exec(ctx, `
+					INSERT INTO dune.journey_story_node
+						(account_id, story_node_id, has_pending_reward,
+						 complete_condition_state, reveal_condition_state,
+						 fail_condition_state, metadata_state, reset_group)
+					VALUES ($1, $2, false,
+						'true'::jsonb, 'true'::jsonb,
+						'{}'::jsonb, '{}'::jsonb,
+						'Default'::dune.JourneyStoryResetGroup)`,
+					accountID, nodeID)
+				if err != nil {
+					return msgMutate{err: fmt.Errorf("insert node %s: %w", nodeID, err)}
+				}
+			}
+		}
+
+		if setTier {
+			_, err = tx.Exec(ctx,
+				`SELECT dune.set_player_faction_reputation($1, $2, $3)`,
+				actorID, factionID, factionTierThresholds[19])
+			if err != nil {
+				return msgMutate{err: fmt.Errorf("set faction tier: %w", err)}
+			}
+		}
+
+		if err := tx.Commit(ctx); err != nil {
+			return msgMutate{err: err}
+		}
+
+		tierMsg := ""
+		if setTier {
+			tierMsg = fmt.Sprintf(" + %s set to tier 19", factionDisplayName(factionID))
+		}
+		return msgMutate{ok: fmt.Sprintf(
+			"Progression unlock (%s/%s) applied to actor %d: %d nodes%s — takes effect on next login",
+			preset, faction, actorID, len(nodes), tierMsg)}
+	}
+}
+
 func cmdDeleteAllTutorials(playerID int64) Cmd {
 	return func() Msg {
 		if globalDB == nil {

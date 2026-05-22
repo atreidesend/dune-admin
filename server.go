@@ -79,6 +79,7 @@ func startServer(addr string) {
 	mux.HandleFunc("DELETE /api/v1/players/item/{id}", handleDeleteItem)
 	mux.HandleFunc("POST /api/v1/players/reset-spec", handleResetSpec)
 	mux.HandleFunc("POST /api/v1/players/set-faction-tier", handleSetFactionTier)
+	mux.HandleFunc("POST /api/v1/players/progression-unlock", handleProgressionUnlock)
 	mux.HandleFunc("POST /api/v1/players/journey/complete", handleJourneyComplete)
 	mux.HandleFunc("POST /api/v1/players/journey/reset", handleJourneyReset)
 	mux.HandleFunc("POST /api/v1/players/journey/wipe", handleJourneyWipe)
