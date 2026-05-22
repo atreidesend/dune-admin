@@ -9,21 +9,16 @@ import (
 )
 
 var (
-	sqlLineComment      = regexp.MustCompile(`--[^\n]*`)
-	sqlBlockComment     = regexp.MustCompile(`(?s)/\*.*?\*/`)
-	sqlReadOnlyPrefixes = []string{"select", "explain", "show"}
+	sqlLineComment  = regexp.MustCompile(`--[^\n]*`)
+	sqlBlockComment = regexp.MustCompile(`(?s)/\*.*?\*/`)
+	sqlReadOnlyRe   = regexp.MustCompile(`^(select|explain|show|with)[\s(]`)
 )
 
 func isReadOnlySQL(sql string) bool {
 	s := sqlBlockComment.ReplaceAllString(sql, " ")
 	s = sqlLineComment.ReplaceAllString(s, " ")
 	s = strings.ToLower(strings.TrimSpace(s))
-	for _, prefix := range sqlReadOnlyPrefixes {
-		if strings.HasPrefix(s, prefix) {
-			return true
-		}
-	}
-	return false
+	return sqlReadOnlyRe.MatchString(s)
 }
 
 func handleDBTables(w http.ResponseWriter, r *http.Request) {

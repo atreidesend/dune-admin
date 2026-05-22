@@ -22,6 +22,9 @@ func TestIsReadOnlySQL(t *testing.T) {
 		{"block comment stripped, select kept", "/* comment */ SELECT 1", true},
 		{"block comment disguises write", "/* SELECT */ UPDATE players SET x=1", false},
 		{"multiline block comment", "/*\n multi\n line\n*/SELECT 1", true},
+		{"select no word boundary blocked", "selectinto players", false},
+		{"cte select allowed", "WITH cte AS (SELECT 1) SELECT * FROM cte", true},
+		{"empty string", "", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
