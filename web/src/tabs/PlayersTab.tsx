@@ -242,7 +242,6 @@ export default function PlayersTab() {
                         <td className="px-3 py-2">
                           <div className="flex gap-1 flex-wrap">
                             <Button size="sm" variant="ghost" onPress={() => { setSelectedPlayer(player); setShowInventory(true) }}>Inventory</Button>
-                            <Button size="sm" variant="ghost" onPress={() => { setSelectedPlayer(player); setShowGiveItem(true) }}>Give Item</Button>
                             <Button size="sm" variant="ghost" onPress={() => { setSelectedPlayer(player); setShowGiveItems(true) }}>Give Items</Button>
                             <Button size="sm" variant="ghost" onPress={() => { setSelectedPlayer(player); setShowActions(true) }}>Actions</Button>
                           </div>
@@ -797,29 +796,43 @@ function GiveItemsModal({ player, open, onClose }: { player: Player; open: boole
                         </div>
                       )}
                     </div>
-                    <input type="number" min={1} value={qty} onChange={e => setQty(Number(e.target.value))}
-                      className="rounded px-2 py-1.5 text-sm border w-16 text-center"
-                      style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
-                    <input type="number" min={0} value={quality} onChange={e => setQuality(Number(e.target.value))}
-                      className="rounded px-2 py-1.5 text-sm border w-16 text-center"
-                      style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>Qty</span>
+                      <input type="number" min={1} value={qty} onChange={e => setQty(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="rounded px-2 py-1.5 text-sm border w-16 text-center"
+                        style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-xs" style={{ color: 'var(--color-text-dim)' }}>Quality</span>
+                      <input type="number" min={0} value={quality} onChange={e => setQuality(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="rounded px-2 py-1.5 text-sm border w-16 text-center"
+                        style={{ background: 'var(--color-surface)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
+                    </div>
                     <Button size="sm" onPress={addToStaged} isDisabled={!selected}>+ Add</Button>
                   </div>
                   {staged.length > 0 && (
-                    <div className="flex flex-col gap-1 overflow-y-auto flex-1">
-                      {staged.map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 rounded text-xs" style={{ background: 'var(--color-surface)', border: '1px solid #2a2418' }}>
-                          <span className="flex-1 font-mono">{item.template}</span>
-                          <input type="number" min={1} value={item.qty} onChange={e => updateStaged(idx, 'qty', Number(e.target.value))}
-                            className="rounded px-2 py-1 border w-14 text-center"
-                            style={{ background: 'var(--color-bg)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
-                          <input type="number" min={0} value={item.quality} onChange={e => updateStaged(idx, 'quality', Number(e.target.value))}
-                            className="rounded px-2 py-1 border w-14 text-center"
-                            style={{ background: 'var(--color-bg)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
-                          <button onClick={() => removeFromStaged(idx)} className="text-red-400 hover:text-red-300 px-1">✕</button>
-                        </div>
-                      ))}
-                    </div>
+                    <>
+                      <div className="flex items-center gap-2 px-3 shrink-0">
+                        <span className="flex-1" />
+                        <span className="text-xs w-14 text-center" style={{ color: 'var(--color-text-dim)' }}>Qty</span>
+                        <span className="text-xs w-14 text-center" style={{ color: 'var(--color-text-dim)' }}>Qual</span>
+                        <span className="w-6" />
+                      </div>
+                      <div className="flex flex-col gap-1 overflow-y-auto flex-1">
+                        {staged.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-1.5 rounded text-xs" style={{ background: 'var(--color-surface)', border: '1px solid #2a2418' }}>
+                            <span className="flex-1 font-mono">{item.template}</span>
+                            <input type="number" min={1} value={item.qty} onChange={e => updateStaged(idx, 'qty', Math.max(1, parseInt(e.target.value) || 1))}
+                              className="rounded px-2 py-1 border w-14 text-center"
+                              style={{ background: 'var(--color-bg)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
+                            <input type="number" min={0} value={item.quality} onChange={e => updateStaged(idx, 'quality', Math.max(0, parseInt(e.target.value) || 0))}
+                              className="rounded px-2 py-1 border w-14 text-center"
+                              style={{ background: 'var(--color-bg)', color: 'var(--color-text)', borderColor: '#2a2418', outline: 'none' }} />
+                            <button onClick={() => removeFromStaged(idx)} className="text-red-400 hover:text-red-300 px-1">✕</button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                   {result && (
                     <div className="text-xs shrink-0 rounded px-3 py-2" style={{ background: 'var(--color-surface)', border: '1px solid #2a2418' }}>
