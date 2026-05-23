@@ -73,3 +73,42 @@ func handleGiveItemToStorage(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonOK(w, map[string]string{"ok": msg.ok})
 }
+
+func handleGiveItemsToStorage(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		jsonErr(w, fmt.Errorf("invalid id"), 400)
+		return
+	}
+	var req struct {
+		Items []struct {
+			Template string `json:"template"`
+			Qty      int64  `json:"qty"`
+			Quality  int64  `json:"quality"`
+		} `json:"items"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	type skippedItem struct {
+		Template string `json:"template"`
+		Reason   string `json:"reason"`
+	}
+	given := []string{}
+	skipped := []skippedItem{}
+	for _, item := range req.Items {
+		msg, ok := cmdGiveItemToContainer(id, item.Template, item.Qty, item.Quality)().(msgMutate)
+		if !ok || msg.err != nil {
+			reason := "internal error"
+			if ok && msg.err != nil {
+				reason = msg.err.Error()
+			}
+			skipped = append(skipped, skippedItem{Template: item.Template, Reason: reason})
+			continue
+		}
+		given = append(given, item.Template)
+	}
+	jsonOK(w, map[string]any{"given": given, "skipped": skipped})
+}
