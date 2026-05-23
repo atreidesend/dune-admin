@@ -627,7 +627,10 @@ function GiveItemsModal({ player, open, onClose }: { player: Player; open: boole
       const res = await api.players.giveItems(player.id, staged)
       setResult(res)
       setStaged([])
-      if (res.skipped.length === 0) onClose()
+      if (res.skipped.length === 0) {
+        toast.success(`Gave ${res.given.length} item${res.given.length !== 1 ? 's' : ''} to ${player.name}`)
+        onClose()
+      }
     } catch (e: unknown) {
       toast.danger(e instanceof Error ? e.message : String(e))
     } finally {
