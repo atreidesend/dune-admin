@@ -207,6 +207,40 @@ func handleGiveItem(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]string{"ok": msg.ok})
 }
 
+func handleGiveItems(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		PlayerID int64 `json:"player_id"`
+		Items    []struct {
+			Template string `json:"template"`
+			Qty      int64  `json:"qty"`
+			Quality  int64  `json:"quality"`
+		} `json:"items"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	type skippedItem struct {
+		Template string `json:"template"`
+		Reason   string `json:"reason"`
+	}
+	given := []string{}
+	skipped := []skippedItem{}
+	for _, item := range req.Items {
+		msg, ok := cmdGiveItem(req.PlayerID, item.Template, item.Qty, item.Quality)().(msgMutate)
+		if !ok || msg.err != nil {
+			reason := "internal error"
+			if ok && msg.err != nil {
+				reason = msg.err.Error()
+			}
+			skipped = append(skipped, skippedItem{Template: item.Template, Reason: reason})
+			continue
+		}
+		given = append(given, item.Template)
+	}
+	jsonOK(w, map[string]interface{}{"given": given, "skipped": skipped})
+}
+
 func handleGrantLive(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		ControllerID int64  `json:"controller_id"`
