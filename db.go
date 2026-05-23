@@ -2103,34 +2103,38 @@ var landsraadMissionNodesHarkonnen = []string{
 }
 
 // nodesForPreset returns the journey node IDs to complete for a faction+preset.
-// ch3_start: Rank5To20 onboarding only.
-// rank19_eligible: onboarding + faction-neutral chapter-2 storyline + chosen
-// faction's investigate/test/poisonedspice arc + weekly Landsraad mission tree.
-// The expanded set covers all storyline beats observed completed on the
-// rank-19 / rank-8 reference characters, so a fresh (rank 0) character can be
-// brought to rank 19 in one shot without per-rank login/logout cycles.
+// ch3_start: Rank5To20 onboarding + faction-neutral chapter-2 storyline + chosen
+// faction's Ch2→Ch3 transition / Test of Loyalty(Treachery) / investigations /
+// poisoned spice arc — i.e. everything required for a fresh character to land
+// at rank 5 (House Operator), so rank 6-19 can be earned organically.
+// rank19_eligible: same set + the weekly Landsraad mission tree, fast-forwarded
+// to tier 19.
 func nodesForPreset(faction, preset string) []string {
 	nodes := append([]string{}, climbTheRanksNodes...)
-	if preset != "rank19_eligible" {
-		return nodes
-	}
 	nodes = append(nodes, climbTheRanksStoryNodes...)
 	switch faction {
 	case "atreides":
 		nodes = append(nodes, climbTheRanksStoryNodesAtreides...)
-		nodes = append(nodes, landsraadMissionNodesAtreides...)
 	case "harkonnen":
 		nodes = append(nodes, climbTheRanksStoryNodesHarkonnen...)
-		nodes = append(nodes, landsraadMissionNodesHarkonnen...)
+	}
+	if preset == "rank19_eligible" {
+		switch faction {
+		case "atreides":
+			nodes = append(nodes, landsraadMissionNodesAtreides...)
+		case "harkonnen":
+			nodes = append(nodes, landsraadMissionNodesHarkonnen...)
+		}
 	}
 	return nodes
 }
 
-// cmdProgressionUnlock completes all prerequisite faction story journey nodes
-// and writes the corresponding gameplay tags, optionally setting faction tier.
+// cmdProgressionUnlock completes all prerequisite faction story journey nodes,
+// writes the corresponding gameplay tags, and sets reputation to the preset's
+// target tier.
 //
 // faction: "atreides" | "harkonnen"
-// preset:  "ch3_start" (through Rank03) | "rank19_eligible" (through Rank04 + tier 19)
+// preset:  "ch3_start" (rank 5 — House Operator) | "rank19_eligible" (rank 19)
 func cmdProgressionUnlock(actorID int64, faction, preset string) Cmd {
 	return func() Msg {
 		if globalDB == nil {
@@ -2158,11 +2162,12 @@ func cmdProgressionUnlock(actorID int64, faction, preset string) Cmd {
 			return msgMutate{err: fmt.Errorf("faction must be atreides or harkonnen")}
 		}
 
-		setTier := false
+		var targetTier int
 		switch preset {
 		case "ch3_start":
+			targetTier = 5
 		case "rank19_eligible":
-			setTier = true
+			targetTier = 19
 		default:
 			return msgMutate{err: fmt.Errorf("preset must be ch3_start or rank19_eligible")}
 		}
@@ -2212,7 +2217,7 @@ func cmdProgressionUnlock(actorID int64, faction, preset string) Cmd {
 			"DialogueFlags.Factions.PlayedAllegianceCinematic",
 			"DialogueFlags.Factions.SeenAnvilCinematic",
 		}
-		if setTier {
+		if targetTier >= 19 {
 			allTags = append(allTags, "Journey.LandsraadContractsUnlocked")
 		}
 		for t := 0; t <= maxTier; t++ {
@@ -2246,32 +2251,26 @@ func cmdProgressionUnlock(actorID int64, faction, preset string) Cmd {
 			return msgMutate{err: fmt.Errorf("update player tags: %w", err)}
 		}
 
-		if setTier {
-			// +1 over the tier-19 threshold: the game UI floors at the threshold
-			// (rep == threshold shows the tier below), so we nudge just over.
-			rank19Rep := factionTierThresholds[19] + 1
-			if _, err = tx.Exec(ctx,
-				`SELECT dune.set_player_faction_reputation($1, $2, $3)`,
-				controllerID, factionID, rank19Rep); err != nil {
-				return msgMutate{err: fmt.Errorf("set faction tier: %w", err)}
-			}
-			if _, err = tx.Exec(ctx, factionPlayerComponentRepSQL,
-				controllerID, factionName, rank19Rep); err != nil {
-				return msgMutate{err: fmt.Errorf("update FactionPlayerComponent rep: %w", err)}
-			}
+		// +1 over the tier threshold: the game UI floors at the threshold
+		// (rep == threshold shows the tier below), so we nudge just over.
+		targetRep := factionTierThresholds[targetTier] + 1
+		if _, err = tx.Exec(ctx,
+			`SELECT dune.set_player_faction_reputation($1, $2, $3)`,
+			controllerID, factionID, targetRep); err != nil {
+			return msgMutate{err: fmt.Errorf("set faction rep: %w", err)}
+		}
+		if _, err = tx.Exec(ctx, factionPlayerComponentRepSQL,
+			controllerID, factionName, targetRep); err != nil {
+			return msgMutate{err: fmt.Errorf("update FactionPlayerComponent rep: %w", err)}
 		}
 
 		if err := tx.Commit(ctx); err != nil {
 			return msgMutate{err: err}
 		}
 
-		tierMsg := fmt.Sprintf("%s tier tags 0–%d", factionName, maxTier)
-		if setTier {
-			tierMsg += fmt.Sprintf(" + rep tier 19 on controller %d", controllerID)
-		}
 		return msgMutate{ok: fmt.Sprintf(
-			"Progression unlock (%s/%s): %d journey nodes completed + %s — takes effect on next login",
-			preset, faction, len(journeyNodes), tierMsg)}
+			"Progression unlock (%s/%s): %d journey nodes completed + %s tier tags 0–%d + rep tier %d on controller %d — takes effect on next login",
+			preset, faction, len(journeyNodes), factionName, maxTier, targetTier, controllerID)}
 	}
 }
 
