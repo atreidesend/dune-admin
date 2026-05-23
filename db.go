@@ -1661,13 +1661,45 @@ func cmdAwardCharXP(playerID int64, amount int64) Cmd {
 			return msgMutate{err: fmt.Errorf("read current state: %w", err)}
 		}
 
+		// Resolve controller id from the pawn id so we can read purchased
+		// keystones (which are keyed by controller id). A missing player_state
+		// row means no keystones could have been purchased — treat bonus as 0.
+		var keystoneBonus int64
+		var controllerID int64
+		err = globalDB.QueryRow(ctx, `
+			SELECT player_controller_id FROM dune.player_state
+			WHERE player_pawn_id = $1 LIMIT 1`, playerID).Scan(&controllerID)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return msgMutate{err: fmt.Errorf("resolve controller id: %w", err)}
+		}
+		if controllerID != 0 {
+			rows, err := globalDB.Query(ctx, `
+				SELECT keystone_id FROM dune.purchased_specialization_keystones
+				WHERE player_id = $1::bigint`, controllerID)
+			if err != nil {
+				return msgMutate{err: fmt.Errorf("read keystones: %w", err)}
+			}
+			var ids []int16
+			for rows.Next() {
+				var id int16
+				if err := rows.Scan(&id); err != nil {
+					rows.Close()
+					return msgMutate{err: fmt.Errorf("scan keystone: %w", err)}
+				}
+				ids = append(ids, id)
+			}
+			rows.Close()
+			keystoneBonus = keystoneSPBonus(ids)
+		}
+
 		newXP := currentXP + amount
 		if newXP > maxCharXP {
 			newXP = maxCharXP
 		}
 		newLevel := int64(xpToLevel(newXP))
-		newTotalSP := newLevel
-		newUnspentSP := newTotalSP - spentSP
+		newTotalSP := newLevel + keystoneBonus
+		// Starter job always occupies 1 SP that is excluded from spentSP.
+		newUnspentSP := newTotalSP - spentSP - 1
 		if newUnspentSP < 0 {
 			newUnspentSP = 0
 		}
