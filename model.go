@@ -89,6 +89,11 @@ type tagsDataFile struct {
 	// Without applying these the trainer contract's tags land but the skill
 	// tree branch stays locked.
 	ContractSkillGrants map[string][]string `json:"contract_skill_grants"`
+	// JobSkillBlocks["Trooper"] = every bExternal Skills.Key.* module in the
+	// Trooper skill tree (tier 1/2/3 + capstones). Used by Unlock Trainer to
+	// grant the *entire* job's block set, since only ~10 of 30 are
+	// contract-granted (the rest are normally unlocked by dialogue or auto).
+	JobSkillBlocks map[string][]string `json:"job_skill_blocks"`
 }
 
 type blueprintRow struct {

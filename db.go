@@ -1586,12 +1586,185 @@ func cmdCompleteContracts(accountID int64, contractIDs []string) Cmd {
 			extra += grantedExtra
 		}
 
+		// Strip any in-progress ContractItem rows so the in-game quest
+		// tracker doesn't keep showing the conditions for a contract we just
+		// force-completed. ContractName.Name uses the short alias form
+		// (no DA_CT_ prefix).
+		shortNames := make([]string, 0, len(resolved))
+		for _, full := range resolved {
+			shortNames = append(shortNames, strings.TrimPrefix(full, "DA_CT_"))
+		}
+		dismissedExtra, err := dismissActiveContracts(ctx, accountID, shortNames)
+		if err != nil {
+			return msgMutate{err: err}
+		}
+		extra += dismissedExtra
+
 		summary := resolved[0]
 		if len(resolved) > 1 {
 			summary = fmt.Sprintf("%d contracts", len(resolved))
 		}
 		return msgMutate{ok: fmt.Sprintf("Applied %s%s — takes effect on next login", summary, extra)}
 	}
+}
+
+// cmdResetJobSkills removes every Skills.Key.* ModuleData entry for the named
+// job's skill tree, undoing a prior Unlock Trainer that was applied by
+// mistake. Only the Key blocks for the job are touched — Attribute/Perk/
+// Ability child nodes are left alone (those usually have SpSpent: 0 unless
+// the player actually purchased them).
+func cmdResetJobSkills(accountID int64, job string) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgMutate{err: fmt.Errorf("not connected")}
+		}
+		if accountID == 0 {
+			return msgMutate{err: fmt.Errorf("account ID required")}
+		}
+		blocks := tagsData.JobSkillBlocks[job]
+		if len(blocks) == 0 {
+			return msgMutate{err: fmt.Errorf("unknown job %q", job)}
+		}
+		ctx := context.Background()
+
+		var pawnID int64
+		_ = globalDB.QueryRow(ctx, `
+			SELECT player_pawn_id FROM dune.player_state
+			WHERE account_id = $1 LIMIT 1`, accountID).Scan(&pawnID)
+		if pawnID == 0 {
+			return msgMutate{err: fmt.Errorf("no pawn for account %d", accountID)}
+		}
+
+		removed := 0
+		for _, sk := range blocks {
+			key := fmt.Sprintf(`(TagName="%s")`, sk)
+			tag, err := globalDB.Exec(ctx, `
+				UPDATE dune.fgl_entities fe
+				SET components = jsonb_set(
+					fe.components,
+					ARRAY['FLevelComponent','1','ModuleData'],
+					(fe.components->'FLevelComponent'->1->'ModuleData') - $2)
+				WHERE fe.entity_id = (
+					SELECT entity_id FROM dune.actor_fgl_entities
+					WHERE actor_id = $1 AND slot_name = 'DuneCharacter'
+				)
+				AND (fe.components->'FLevelComponent'->1->'ModuleData') ? $2`,
+				pawnID, key)
+			if err != nil {
+				return msgMutate{err: fmt.Errorf("remove %s: %w", sk, err)}
+			}
+			if tag.RowsAffected() > 0 {
+				removed++
+			}
+		}
+		return msgMutate{ok: fmt.Sprintf("Reset %s skill tree — removed %d block(s)", job, removed)}
+	}
+}
+
+// cmdSetStarterClass writes FLevelComponent.StarterSkillTreeTag to
+// Skills.Key.<Job>1 so the game treats that as the character's base class.
+// Without this set (or with it = "None") characters that have multiple jobs
+// unlocked end up showing several "starter" abilities in the UI.
+func cmdSetStarterClass(accountID int64, job string) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgMutate{err: fmt.Errorf("not connected")}
+		}
+		if accountID == 0 {
+			return msgMutate{err: fmt.Errorf("account ID required")}
+		}
+		if _, ok := tagsData.JobSkillBlocks[job]; !ok {
+			return msgMutate{err: fmt.Errorf("unknown job %q", job)}
+		}
+		ctx := context.Background()
+
+		var pawnID int64
+		_ = globalDB.QueryRow(ctx, `
+			SELECT player_pawn_id FROM dune.player_state
+			WHERE account_id = $1 LIMIT 1`, accountID).Scan(&pawnID)
+		if pawnID == 0 {
+			return msgMutate{err: fmt.Errorf("no pawn for account %d", accountID)}
+		}
+
+		starterTag := fmt.Sprintf("Skills.Key.%s1", job)
+		_, err := globalDB.Exec(ctx, `
+			UPDATE dune.fgl_entities fe
+			SET components = jsonb_set(
+				fe.components,
+				ARRAY['FLevelComponent','1','StarterSkillTreeTag','TagName'],
+				to_jsonb($2::text))
+			WHERE fe.entity_id = (
+				SELECT entity_id FROM dune.actor_fgl_entities
+				WHERE actor_id = $1 AND slot_name = 'DuneCharacter'
+			)`, pawnID, starterTag)
+		if err != nil {
+			return msgMutate{err: fmt.Errorf("set starter tag: %w", err)}
+		}
+		return msgMutate{ok: fmt.Sprintf("Starter class set to %s (%s)", job, starterTag)}
+	}
+}
+
+// cmdGrantJobSkills unlocks every bExternal Skills.Key.* module in the named
+// job's skill tree (e.g. "Trooper" → Trooper1/2/3 + CapstoneGadgets +
+// CapstoneWeaponry + CapstoneSuspensorTech). Only ~⅓ of these blocks are
+// contract-granted via SkillsKeyRewards; the rest are normally unlocked by
+// trainer dialogue or auto on level progression, so the admin Unlock Trainer
+// action calls this after the contract batch to bypass those gates.
+func cmdGrantJobSkills(accountID int64, job string) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgMutate{err: fmt.Errorf("not connected")}
+		}
+		if accountID == 0 {
+			return msgMutate{err: fmt.Errorf("account ID required")}
+		}
+		blocks := tagsData.JobSkillBlocks[job]
+		if len(blocks) == 0 {
+			return msgMutate{err: fmt.Errorf("unknown job %q (check tags-data.json job_skill_blocks)", job)}
+		}
+		ctx := context.Background()
+		extra, err := grantSkillBlocks(ctx, accountID, blocks)
+		if err != nil {
+			return msgMutate{err: err}
+		}
+		return msgMutate{ok: fmt.Sprintf("Unlocked %s skill tree%s — takes effect on next login", job, extra)}
+	}
+}
+
+// dismissActiveContracts deletes any ContractItem inventory entries whose
+// stats.FContractItemStats.ContractName.Name matches one of shortNames.
+// Active contract items drive the in-game quest tracker, so after force-
+// completing a contract via tags we need to remove the live instance
+// otherwise the player keeps seeing "Deploy Assault Seekers" / etc as
+// outstanding. No-op if the player never had the contract active.
+func dismissActiveContracts(ctx context.Context, accountID int64, shortNames []string) (string, error) {
+	if len(shortNames) == 0 {
+		return "", nil
+	}
+	var pawnID int64
+	_ = globalDB.QueryRow(ctx, `
+		SELECT player_pawn_id FROM dune.player_state
+		WHERE account_id = $1 LIMIT 1`, accountID).Scan(&pawnID)
+	if pawnID == 0 {
+		return "", nil
+	}
+	tag, err := globalDB.Exec(ctx, `
+		DELETE FROM dune.items
+		WHERE template_id = 'ContractItem'
+		  AND inventory_id IN (
+		      SELECT id FROM dune.inventories
+		      WHERE actor_id = $1 AND inventory_type = 29
+		  )
+		  AND stats->'FContractItemStats'->1->'ContractName'->>'Name' = ANY($2::text[])`,
+		pawnID, shortNames)
+	if err != nil {
+		return "", fmt.Errorf("dismiss active contracts: %w", err)
+	}
+	n := tag.RowsAffected()
+	if n == 0 {
+		return "", nil
+	}
+	return fmt.Sprintf(", dismissed %d active contract(s)", n), nil
 }
 
 // grantSkillBlocks ensures each Skills.Key.<X> entry exists in the player's
@@ -1612,6 +1785,12 @@ func grantSkillBlocks(ctx context.Context, accountID int64, skillKeys []string) 
 	granted := 0
 	for _, sk := range skillKeys {
 		key := fmt.Sprintf(`(TagName="%s")`, sk)
+		// Set ModuleData[key] = {"SkillPointsSpent": 1} when:
+		//   - key doesn't exist yet (game never created a placeholder), OR
+		//   - key exists with SpSpent <= 0 (game-created placeholder that
+		//     means "available but not yet purchased").
+		// SpSpent >= 1 is left alone so any further SP the player has
+		// already spent on child nodes survives.
 		tag, err := globalDB.Exec(ctx, `
 			UPDATE dune.fgl_entities fe
 			SET components = jsonb_set(
@@ -1623,7 +1802,10 @@ func grantSkillBlocks(ctx context.Context, accountID int64, skillKeys []string) 
 				SELECT entity_id FROM dune.actor_fgl_entities
 				WHERE actor_id = $1 AND slot_name = 'DuneCharacter'
 			)
-			AND NOT (fe.components->'FLevelComponent'->1->'ModuleData') ? $2`,
+			AND COALESCE(
+				(fe.components->'FLevelComponent'->1->'ModuleData'->$2->>'SkillPointsSpent')::int,
+				0
+			) < 1`,
 			pawnID, key)
 		if err != nil {
 			return "", fmt.Errorf("grant %s: %w", sk, err)
@@ -1633,7 +1815,7 @@ func grantSkillBlocks(ctx context.Context, accountID int64, skillKeys []string) 
 		}
 	}
 	if granted == 0 {
-		return ", no new skill blocks (already unlocked)", nil
+		return ", no skill blocks needed (all already unlocked)", nil
 	}
 	return fmt.Sprintf(", unlocked %d skill block(s)", granted), nil
 }

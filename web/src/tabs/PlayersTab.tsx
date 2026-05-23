@@ -1174,8 +1174,8 @@ api.players.partitions().then(setPartitions).catch(() => {})
                     {contractCatalogLoaded && !contractCatalogError && (
                       <div className="rounded-lg p-3 shrink-0 flex flex-col gap-2" style={{ background: '#0f0d09', border: '1px solid #2a2418' }}>
                         <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-primary)' }}>Unlock Trainer</div>
-                        <div className="text-xs" style={{ color: 'var(--color-text-dim)' }}>One click per trainer applies every Trainer_<i>X</i>_* contract&apos;s completion tags (both T1 and T2 in one shot).</div>
-                        <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+                        <div className="text-xs" style={{ color: 'var(--color-text-dim)' }}>Applies every Trainer_<i>X</i>_* contract&apos;s completion tags + grants the full job skill tree (Skills.Key.&lt;Job&gt;1/2/3 + all 3 capstones). Reset removes the job&apos;s Skills.Key.* blocks if applied by mistake.</div>
+                        <div className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
                           {(['BeneGesserit', 'Mentat', 'Planetologist', 'Swordmaster', 'Trooper'] as const).map(trainer => {
                             const re = new RegExp(`^Trainer_${trainer}\\d+(_|$)`)
                             const matches = contractCatalog
@@ -1183,23 +1183,62 @@ api.players.partitions().then(setPartitions).catch(() => {})
                               .filter(id => re.test(id))
                             if (matches.length === 0) return null
                             return (
-                              <Button
-                                key={trainer}
-                                size="sm"
-                                variant="secondary"
-                                isDisabled={busy}
-                                onPress={() => run(
-                                  () => api.players.completeContracts(player.account_id, matches),
-                                  `Unlocked ${trainer} (${matches.length} contracts) for ${player.name}`
-                                ).then(() => { setNodesLoaded(false) })}
-                              >
-                                {trainer} <span style={{ color: 'var(--color-text-dim)' }}>({matches.length})</span>
-                              </Button>
+                              <div key={trainer} className="flex items-center gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  isDisabled={busy}
+                                  className="flex-1"
+                                  onPress={() => run(
+                                    async () => {
+                                      const r = await api.players.completeContracts(player.account_id, matches)
+                                      await api.players.grantJobSkills(player.account_id, trainer)
+                                      return r
+                                    },
+                                    `Unlocked ${trainer} (${matches.length} contracts + skill tree) for ${player.name}`
+                                  ).then(() => { setNodesLoaded(false) })}
+                                >
+                                  {trainer} <span style={{ color: 'var(--color-text-dim)' }}>({matches.length})</span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="danger-soft"
+                                  isDisabled={busy}
+                                  onPress={() => run(
+                                    () => api.players.resetJobSkills(player.account_id, trainer),
+                                    `Reset ${trainer} skill tree for ${player.name}`
+                                  )}
+                                >
+                                  Reset
+                                </Button>
+                              </div>
                             )
                           })}
                         </div>
                       </div>
                     )}
+
+                    {/* ── Starter Class ──────────────────────────────────────── */}
+                    <div className="rounded-lg p-3 shrink-0 flex flex-col gap-2" style={{ background: '#0f0d09', border: '1px solid #2a2418' }}>
+                      <div className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-primary)' }}>Starter Class</div>
+                      <div className="text-xs" style={{ color: 'var(--color-text-dim)' }}>Sets FLevelComponent.StarterSkillTreeTag = <code>Skills.Key.&lt;Job&gt;1</code> so the game treats this job as the character&apos;s base. Fixes SP accounting and stops multi-class characters from showing several starter abilities.</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(['BeneGesserit', 'Mentat', 'Planetologist', 'Swordmaster', 'Trooper'] as const).map(trainer => (
+                          <Button
+                            key={trainer}
+                            size="sm"
+                            variant="ghost"
+                            isDisabled={busy}
+                            onPress={() => run(
+                              () => api.players.setStarterClass(player.account_id, trainer),
+                              `Set starter to ${trainer} for ${player.name}`
+                            )}
+                          >
+                            {trainer}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
 
                     {/* ── Unlock Main Quest ──────────────────────────────────── */}
                     <div className="rounded-lg p-3 shrink-0 flex flex-col gap-2" style={{ background: '#0f0d09', border: '1px solid #2a2418' }}>

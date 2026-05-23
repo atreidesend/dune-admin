@@ -138,6 +138,12 @@ export const api = {
       req<MutateResult>('POST', '/players/contract/complete', { account_id, contract_id }),
     completeContracts: (account_id: number, contract_ids: string[]) =>
       req<MutateResult>('POST', '/players/contracts/complete', { account_id, contract_ids }),
+    grantJobSkills: (account_id: number, job: string) =>
+      req<MutateResult>('POST', '/players/grant-job-skills', { account_id, job }),
+    resetJobSkills: (account_id: number, job: string) =>
+      req<MutateResult>('POST', '/players/reset-job-skills', { account_id, job }),
+    setStarterClass: (account_id: number, job: string) =>
+      req<MutateResult>('POST', '/players/set-starter-class', { account_id, job }),
     deleteTutorials: (player_id: number) =>
       req<MutateResult>('POST', '/players/delete-tutorials', { player_id }),
     wipeCodex: (account_id: number) =>

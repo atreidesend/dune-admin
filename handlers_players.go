@@ -676,6 +676,69 @@ func handleCompleteContract(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]string{"ok": msg.ok})
 }
 
+func handleResetJobSkills(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		AccountID int64  `json:"account_id"`
+		Job       string `json:"job"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	msg, ok := cmdResetJobSkills(req.AccountID, req.Job)().(msgMutate)
+	if !ok {
+		jsonErr(w, fmt.Errorf("internal error"), 500)
+		return
+	}
+	if msg.err != nil {
+		jsonErr(w, msg.err, 500)
+		return
+	}
+	jsonOK(w, map[string]string{"ok": msg.ok})
+}
+
+func handleSetStarterClass(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		AccountID int64  `json:"account_id"`
+		Job       string `json:"job"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	msg, ok := cmdSetStarterClass(req.AccountID, req.Job)().(msgMutate)
+	if !ok {
+		jsonErr(w, fmt.Errorf("internal error"), 500)
+		return
+	}
+	if msg.err != nil {
+		jsonErr(w, msg.err, 500)
+		return
+	}
+	jsonOK(w, map[string]string{"ok": msg.ok})
+}
+
+func handleGrantJobSkills(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		AccountID int64  `json:"account_id"`
+		Job       string `json:"job"`
+	}
+	if err := decode(r, &req); err != nil {
+		jsonErr(w, err, 400)
+		return
+	}
+	msg, ok := cmdGrantJobSkills(req.AccountID, req.Job)().(msgMutate)
+	if !ok {
+		jsonErr(w, fmt.Errorf("internal error"), 500)
+		return
+	}
+	if msg.err != nil {
+		jsonErr(w, msg.err, 500)
+		return
+	}
+	jsonOK(w, map[string]string{"ok": msg.ok})
+}
+
 func handleCompleteContracts(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		AccountID   int64    `json:"account_id"`

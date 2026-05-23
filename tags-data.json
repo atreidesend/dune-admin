@@ -1462,5 +1462,47 @@
     "DA_CT_Trainer_Trooper2_05": [
       "Skills.Key.CapstoneGadgets"
     ]
+  },
+  "job_skill_blocks": {
+    "BeneGesserit": [
+      "Skills.Key.BeneGesserit1",
+      "Skills.Key.BeneGesserit2",
+      "Skills.Key.BeneGesserit3",
+      "Skills.Key.CapstoneManipulation",
+      "Skills.Key.CapstoneSelfControl",
+      "Skills.Key.CapstoneWeirdingWay"
+    ],
+    "Mentat": [
+      "Skills.Key.CapstoneAssassination",
+      "Skills.Key.CapstoneMentalCalculus",
+      "Skills.Key.CapstoneTactician",
+      "Skills.Key.Mentat1",
+      "Skills.Key.Mentat2",
+      "Skills.Key.Mentat3"
+    ],
+    "Planetologist": [
+      "Skills.Key.CapstoneDriver",
+      "Skills.Key.CapstoneExplorer",
+      "Skills.Key.CapstoneScientist",
+      "Skills.Key.Planetologist1",
+      "Skills.Key.Planetologist2",
+      "Skills.Key.Planetologist3"
+    ],
+    "Swordmaster": [
+      "Skills.Key.CapstoneAggression",
+      "Skills.Key.CapstoneBlade",
+      "Skills.Key.CapstoneResolve",
+      "Skills.Key.Swordmaster1",
+      "Skills.Key.Swordmaster2",
+      "Skills.Key.Swordmaster3"
+    ],
+    "Trooper": [
+      "Skills.Key.CapstoneGadgets",
+      "Skills.Key.CapstoneSuspensorTech",
+      "Skills.Key.CapstoneWeaponry",
+      "Skills.Key.Trooper1",
+      "Skills.Key.Trooper2",
+      "Skills.Key.Trooper3"
+    ]
   }
 }
