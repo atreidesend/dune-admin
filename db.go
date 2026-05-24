@@ -3380,6 +3380,81 @@ func cmdRepairPlayerGear(playerID int64) Cmd {
 	}
 }
 
+func cmdRepairVehicle(playerID, vehicleID int64) Cmd {
+	return func() Msg {
+		if globalDB == nil {
+			return msgRepairVehicle{err: fmt.Errorf("not connected")}
+		}
+		if playerID == 0 {
+			return msgRepairVehicle{err: fmt.Errorf("player ID required")}
+		}
+		ctx := context.Background()
+		if err := checkPlayerOffline(ctx, playerID); err != nil {
+			return msgRepairVehicle{err: err}
+		}
+
+		var exists bool
+		err := globalDB.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM dune.actors WHERE id = $1::bigint)`, vehicleID).Scan(&exists)
+		if err != nil {
+			return msgRepairVehicle{err: fmt.Errorf("look up vehicle: %w", err)}
+		}
+		if !exists {
+			return msgRepairVehicle{err: fmt.Errorf("vehicle %d not found", vehicleID)}
+		}
+
+		rows, err := globalDB.Query(ctx, `
+			SELECT id, template_id
+			FROM dune.vehicle_modules
+			WHERE vehicle_id = $1::bigint`, vehicleID)
+		if err != nil {
+			return msgRepairVehicle{err: fmt.Errorf("scan modules: %w", err)}
+		}
+		defer rows.Close()
+
+		type moduleRow struct {
+			id         int64
+			templateID string
+		}
+		var modules []moduleRow
+		for rows.Next() {
+			var m moduleRow
+			if err := rows.Scan(&m.id, &m.templateID); err != nil {
+				continue
+			}
+			modules = append(modules, m)
+		}
+		if err := rows.Err(); err != nil {
+			return msgRepairVehicle{err: err}
+		}
+
+		total := len(modules)
+		repaired := 0
+		skipped := 0
+		for _, m := range modules {
+			target, ok := itemMaxDurability(m.templateID)
+			if !ok || target <= 0 {
+				skipped++
+				continue
+			}
+			// Both fields must be written — Current-only is clamped to surviving Decayed on reload.
+			_, err := globalDB.Exec(ctx, `
+				UPDATE dune.vehicle_modules
+				SET stats = jsonb_set(
+					jsonb_set(stats,
+						'{FVehicleModuleDurabilityStats,1,CurrentDurability}',
+						to_jsonb($2::float8), true),
+					'{FVehicleModuleDurabilityStats,1,DecayedMaxDurability}',
+					to_jsonb($2::float8), true)
+				WHERE id = $1::bigint`, m.id, target)
+			if err != nil {
+				return msgRepairVehicle{repaired: repaired, skipped: skipped, total: total, err: fmt.Errorf("repair module %d: %w", m.id, err)}
+			}
+			repaired++
+		}
+		return msgRepairVehicle{repaired: repaired, skipped: skipped, total: total}
+	}
+}
+
 func cmdFetchCheatLog() Cmd {
 	return func() Msg {
 		if globalDB == nil {

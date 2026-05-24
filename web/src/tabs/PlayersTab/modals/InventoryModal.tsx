@@ -5,7 +5,7 @@ import type { Player, InventoryItem, VehicleRow } from '../../../api/client'
 import { DataTable, type Column } from '../../../dune-ui'
 
 type ItemKey = 'template' | 'stack' | 'quality' | 'durability' | 'actions'
-type VehicleKey = 'class' | 'location' | 'chassis' | 'name' | 'type'
+type VehicleKey = 'class' | 'location' | 'chassis' | 'name' | 'type' | 'actions'
 
 const ITEM_COLUMNS: Column<ItemKey>[] = [
   { key: 'template',   label: 'Template', isRowHeader: true },
@@ -21,6 +21,7 @@ const VEHICLE_COLUMNS: Column<VehicleKey>[] = [
   { key: 'chassis',  label: 'Chassis' },
   { key: 'name',     label: 'Name' },
   { key: 'type',     label: 'Type', sortable: false },
+  { key: 'actions',  label: '', sortable: false },
 ]
 
 interface Props {
@@ -71,6 +72,24 @@ export function InventoryModal({ player, open, onClose }: Props) {
       await api.players.repairItem(item.id)
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, durability: i.max_durability } : i))
       toast.success(`Repaired ${item.name || item.template_id}`)
+    } catch (e: unknown) {
+      toast.danger(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  const handleRepairVehicle = async (v: VehicleRow) => {
+    try {
+      const res = await api.players.repairVehicle(v.id, player.id)
+      const label = v.vehicle_name || v.class
+      if (res.total === 0) {
+        toast.success(`No modules found on ${label}`)
+      } else if (res.skipped > 0) {
+        toast.success(`Repaired ${res.repaired} of ${res.total} modules on ${label} (${res.skipped} skipped, no catalog data) — relog to see in-game`)
+      } else {
+        toast.success(`Repaired ${res.repaired} modules on ${label} — relog to see in-game`)
+      }
+      // Refresh the chassis % indicator.
+      api.players.vehicles(player.controller_id).then(setVehicles).catch(() => {})
     } catch (e: unknown) {
       toast.danger(e instanceof Error ? e.message : String(e))
     }
@@ -189,6 +208,12 @@ export function InventoryModal({ player, open, onClose }: Props) {
                                 {v.is_recovered && <Chip size="sm" color="warning" variant="soft">Recovered</Chip>}
                               </div>
                             )
+                          case 'actions':
+                            return !v.is_backup ? (
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="ghost" onPress={() => handleRepairVehicle(v)}>Repair</Button>
+                              </div>
+                            ) : null
                         }
                       }}
                     />

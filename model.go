@@ -157,6 +157,12 @@ type msgRepairGear struct {
 	scanned  int
 	err      error
 }
+type msgRepairVehicle struct {
+	repaired int
+	skipped  int
+	total    int
+	err      error
+}
 type msgJourney struct {
 	rows []journeyNode
 	err  error
