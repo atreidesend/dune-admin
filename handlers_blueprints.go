@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -40,8 +41,35 @@ func handleExportBlueprint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="blueprint_%d.json"`, id))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, blueprintFilename(bf.Name, id)))
 	json.NewEncoder(w).Encode(bf)
+}
+
+// blueprintFilename returns the suggested download filename: the in-game name
+// if present (sanitized), otherwise blueprint_<id>.json.
+func blueprintFilename(name string, id int64) string {
+	clean := sanitizeFilename(name)
+	if clean == "" {
+		return fmt.Sprintf("blueprint_%d.json", id)
+	}
+	return clean + ".json"
+}
+
+// sanitizeFilename strips characters that are unsafe in filenames or
+// Content-Disposition values across common filesystems.
+func sanitizeFilename(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		switch {
+		case r < 0x20, r == 0x7f:
+			// drop control chars
+		case r == '/', r == '\\', r == ':', r == '*', r == '?', r == '"', r == '<', r == '>', r == '|':
+			b.WriteRune('_')
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return strings.TrimSpace(b.String())
 }
 
 func handleImportBlueprint(w http.ResponseWriter, r *http.Request) {

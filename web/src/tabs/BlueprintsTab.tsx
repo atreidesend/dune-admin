@@ -100,7 +100,7 @@ export default function BlueprintsTab() {
                     <td className="px-4 py-2">
                       <a
                         href={api.blueprints.exportUrl(bp.id)}
-                        download={bp.name ? `${bp.name}.json` : `blueprint-${bp.id}-${bp.owner_name}.json`}
+                        download={bp.name ? `${bp.name.replace(/[/\\:*?"<>|]/g, '_')}.json` : `blueprint_${bp.id}.json`}
                       >
                         <Button size="sm" variant="outline">
                           Export
