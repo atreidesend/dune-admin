@@ -2574,14 +2574,17 @@ func cmdAwardIntel(playerID int64, amount int64) Cmd {
 // ── blueprint JSON types ──────────────────────────────────────────────────────
 
 type blueprintInstance struct {
-	BuildingType string  `json:"building_type"`
-	X            float64 `json:"x"`
-	Y            float64 `json:"y"`
-	Z            float64 `json:"z"`
-	Rotation     float64 `json:"rotation"`
+	InstanceID        *int    `json:"instance_id,omitempty"`
+	BuildingType      string  `json:"building_type"`
+	X                 float64 `json:"x"`
+	Y                 float64 `json:"y"`
+	Z                 float64 `json:"z"`
+	Rotation          float64 `json:"rotation"`
+	ProvidesStability *bool   `json:"provides_stability,omitempty"`
 }
 
 type blueprintPlaceable struct {
+	PlaceableID  *int    `json:"placeable_id,omitempty"`
 	BuildingType string  `json:"building_type"`
 	X            float64 `json:"x"`
 	Y            float64 `json:"y"`
