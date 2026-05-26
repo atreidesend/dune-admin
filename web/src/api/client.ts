@@ -42,7 +42,83 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
   return res.json()
 }
 
-export type Status = { ssh_connected: boolean; db_connected: boolean; pod_ns: string; pod_ip: string; ssh_host: string; version?: string }
+export type ServerSetting = {
+  section: string
+  key: string
+  type: 'float' | 'int' | 'bool'
+  default: string
+  label: string
+  description: string
+  category: string
+  current: string
+  is_overridden: boolean
+  source: 'userOverrides' | 'userGame' | ''
+}
+
+export type ServerSettingUpdate = {
+  section: string
+  key: string
+  value: string
+}
+
+export type RawLine = {
+  prefix: string  // '', '+', or '-'
+  key: string
+  value: string
+}
+
+export type RawSection = {
+  section: string
+  source: 'userGame' | 'userOverrides' | 'userEngine'
+  lines: RawLine[]
+}
+
+export type ServerSettingsResponse = {
+  settings: ServerSetting[]
+  raw: RawSection[]
+}
+
+export type AppConfig = {
+  control: string
+  ssh_host: string
+  ssh_user: string
+  ssh_key: string
+  db_host: string
+  db_port: number
+  db_user: string
+  db_pass: string
+  db_name: string
+  db_schema: string
+  control_namespace: string
+  docker_gameserver: string
+  docker_broker_game: string
+  docker_broker_admin: string
+  cmd_start: string
+  cmd_stop: string
+  cmd_restart: string
+  cmd_status: string
+  broker_game_addr: string
+  broker_admin_addr: string
+  broker_tls: boolean
+  broker_exec_prefix: string
+  backup_dir: string
+  listen_addr: string
+  scrip_currency: number
+}
+
+export type Status = {
+  executor: string       // "ssh" | "local" | "none"
+  control: string        // "kubectl" | "docker" | "local" | "none"
+  ssh_connected: boolean
+  db_connected: boolean
+  ssh_host: string
+  db_host: string
+  pod_ns: string
+  pod_ip: string
+  version?: string
+  commit?: string
+  build_time?: string
+}
 export type Player = { id: number; account_id: number; controller_id: number; fls_id: string; name: string; class: string; map: string; faction_id: number; online_status: string }
 export type InventoryItem = { id: number; template_id: string; name: string; stack_size: number; quality: number; durability: string; max_durability: string }
 export type CurrencyRow = { player_id: number; currency_id: number; balance: number }
@@ -67,6 +143,17 @@ export type BackupFile = { name: string; size_bytes: number; modified: string; h
 export const api = {
   status: () => req<Status>('GET', '/status'),
   reconnect: () => req<Status>('POST', '/reconnect'),
+  config: {
+    get: () => req<AppConfig>('GET', '/config'),
+    save: (cfg: AppConfig) => req<Status>('POST', '/config', cfg),
+  },
+  serverSettings: {
+    get: () => req<ServerSettingsResponse>('GET', '/server-settings'),
+    update: (updates: ServerSettingUpdate[]) =>
+      req<{ ok: string; applied: number; cleared: number }>('PUT', '/server-settings', { updates }),
+    updateRaw: (section: string, target: 'userOverrides' | 'userEngine', lines: string) =>
+      req<{ ok: string }>('PUT', '/server-settings/raw', { section, target, lines }),
+  },
 
   battlegroup: {
     status: () => req<unknown>('GET', '/battlegroup/status'),

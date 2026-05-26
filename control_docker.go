@@ -131,6 +131,10 @@ func (c *dockerControl) EnsureCaptureUser(_ context.Context, exec Executor) {
 	}
 }
 
+func (c *dockerControl) DiscoverIniDir(_ context.Context, _ Executor) (string, error) {
+	return "", fmt.Errorf("docker control plane requires server_ini_dir to be set in config")
+}
+
 func (c *dockerControl) brokerForLabel(label string) string {
 	switch label {
 	case "mq-game":

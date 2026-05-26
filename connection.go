@@ -58,6 +58,7 @@ func connectAll() error {
 	cfg.BrokerAdminAddr = brokerAdminAddr
 	cfg.BrokerTLS = brokerTLS
 	cfg.BackupDir = backupDir
+	cfg.ServerIniDir = serverIniDir
 
 	exec, err := newExecutor(cfg.SSHHost, cfg.SSHUser, cfg.SSHKey)
 	if err != nil {

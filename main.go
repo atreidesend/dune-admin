@@ -48,6 +48,7 @@ var (
 	brokerAdminAddr string
 	brokerTLS       bool
 	backupDir       string
+	serverIniDir    string
 )
 
 // appConfig mirrors the fields written to ~/.dune-admin/config.yaml.
@@ -91,9 +92,17 @@ type appConfig struct {
 	BrokerTLS       bool   `yaml:"broker_tls"`
 	BrokerUser      string `yaml:"broker_user"`
 	BrokerPass      string `yaml:"broker_pass"`
+	// BrokerExecPrefix is prepended to all rabbitmqctl calls. Use when the
+	// broker runs inside a container that isn't managed by the docker control
+	// plane — e.g. "podman exec AMP_MehDune01" or "docker exec my-broker".
+	BrokerExecPrefix string `yaml:"broker_exec_prefix"`
 
 	// Backups — optional path accessed via the executor.
 	BackupDir string `yaml:"backup_dir"`
+
+	// ServerIniDir is the directory containing UserGame.ini and UserOverrides.ini.
+	// e.g. /home/amp/.ampdata/instances/DuneAwakening01/duneawakening/server/state
+	ServerIniDir string `yaml:"server_ini_dir"`
 
 	ScripCurrency int    `yaml:"scrip_currency"`
 	ListenAddr    string `yaml:"listen_addr"`
@@ -151,6 +160,7 @@ func loadConfig() {
 			setEnvIfMissing("BROKER_GAME_ADDR", cfg.BrokerGameAddr)
 			setEnvIfMissing("BROKER_ADMIN_ADDR", cfg.BrokerAdminAddr)
 			setEnvIfMissing("BACKUP_DIR", cfg.BackupDir)
+			setEnvIfMissing("SERVER_INI_DIR", cfg.ServerIniDir)
 			return
 		}
 	}
@@ -217,6 +227,7 @@ func init() {
 	flag.StringVar(&brokerGameAddr, "broker-game", envOr("BROKER_GAME_ADDR", ""), "mq-game broker address host:port")
 	flag.StringVar(&brokerAdminAddr, "broker-admin", envOr("BROKER_ADMIN_ADDR", ""), "mq-admin broker address host:port")
 	flag.StringVar(&backupDir, "backup-dir", envOr("BACKUP_DIR", ""), "Backup directory path")
+	flag.StringVar(&serverIniDir, "ini-dir", envOr("SERVER_INI_DIR", ""), "Directory containing UserGame.ini / UserOverrides.ini")
 	flag.BoolVar(&captureMode, "capture", false, "Capture RabbitMQ messages (grant + notifications) and print to stdout")
 	flag.BoolVar(&setupMode, "setup", false, "Interactive setup wizard — writes ~/.dune-admin/config.yaml")
 	flag.StringVar(&sqlQuery, "sql", "", "Run a SQL query and print results to stdout, then exit")

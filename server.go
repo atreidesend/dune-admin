@@ -51,6 +51,13 @@ func startServer(addr string) {
 	// ── status ────────────────────────────────────────────────────────────────
 	mux.HandleFunc("GET /api/v1/status", handleStatus)
 	mux.HandleFunc("POST /api/v1/reconnect", handleReconnect)
+	mux.HandleFunc("GET /api/v1/config", handleGetConfig)
+	mux.HandleFunc("POST /api/v1/config", handleSaveConfig)
+
+	// ── server settings (UserGame.ini / UserOverrides.ini) ────────────────
+	mux.HandleFunc("GET /api/v1/server-settings", handleGetServerSettings)
+	mux.HandleFunc("PUT /api/v1/server-settings", handleUpdateServerSettings)
+	mux.HandleFunc("PUT /api/v1/server-settings/raw", handleUpdateRawSection)
 
 	// ── battlegroup ───────────────────────────────────────────────────────────
 	mux.HandleFunc("GET /api/v1/battlegroup/status", handleBGStatus)

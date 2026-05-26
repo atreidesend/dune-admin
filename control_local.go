@@ -10,10 +10,11 @@ import (
 // Intended for AMP, LGSM, bare-metal, or any environment where the user
 // manages the game server through their own tooling.
 type localControl struct {
-	cmdStart   string // e.g. "amp start dune"
-	cmdStop    string
-	cmdRestart string
-	cmdStatus  string
+	cmdStart        string // e.g. "amp start dune"
+	cmdStop         string
+	cmdRestart      string
+	cmdStatus       string
+	brokerExecPrefix string // e.g. "podman exec AMP_MehDune01" — prepended to rabbitmqctl calls
 }
 
 func (c *localControl) Name() string { return "local" }
@@ -72,8 +73,15 @@ func (c *localControl) CaptureJWT(_ context.Context, _ Executor) (string, string
 	return "", "", errNotSupported("local", "CaptureJWT")
 }
 
+func (c *localControl) brokerBase() string {
+	if c.brokerExecPrefix != "" {
+		return c.brokerExecPrefix + " rabbitmqctl"
+	}
+	return "rabbitmqctl"
+}
+
 func (c *localControl) ListExchanges(_ context.Context, exec Executor, _ string) ([]binding, error) {
-	raw, err := exec.Exec("rabbitmqctl list_exchanges name 2>/dev/null")
+	raw, err := exec.Exec(c.brokerBase() + " list_exchanges name 2>/dev/null")
 	if err != nil {
 		return nil, errNotSupported("local", "ListExchanges (rabbitmqctl not available)")
 	}
@@ -81,7 +89,7 @@ func (c *localControl) ListExchanges(_ context.Context, exec Executor, _ string)
 }
 
 func (c *localControl) EnsureCaptureUser(_ context.Context, exec Executor) {
-	base := "rabbitmqctl"
+	base := c.brokerBase()
 	out, _ := exec.Exec(fmt.Sprintf("%s add_user %s %s 2>&1", base, capUser, capPass))
 	if !strings.Contains(out, "already exists") {
 		fmt.Printf("[capture] [local] created user %s\n", capUser)
@@ -94,4 +102,8 @@ func (c *localControl) EnsureCaptureUser(_ context.Context, exec Executor) {
 		"%s eval 'application:set_env(rabbitmq_auth_backend_cache, cache_ttl, 86400000).' 2>&1",
 		base))
 	fmt.Println("[capture] [local] auth backends updated")
+}
+
+func (c *localControl) DiscoverIniDir(_ context.Context, _ Executor) (string, error) {
+	return "", fmt.Errorf("local control plane requires server_ini_dir to be set in config")
 }

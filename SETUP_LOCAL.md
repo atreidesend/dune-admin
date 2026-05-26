@@ -45,6 +45,11 @@ cmd_stop:    "amp stop DuneAwakening"
 cmd_restart: "amp restart DuneAwakening"
 cmd_status:  "amp status DuneAwakening"
 
+# If RabbitMQ runs inside a container (e.g. AMP uses Podman internally),
+# set this prefix and it will be prepended to all rabbitmqctl calls:
+# broker_exec_prefix: "podman exec AMP_MehDune01"
+# broker_exec_prefix: "docker exec my-broker"
+
 # Optional:
 backup_dir: /home/dune/backups
 listen_addr: :8080

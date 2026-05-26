@@ -38,6 +38,11 @@ type ControlPlane interface {
 	// EnsureCaptureUser creates the capture user on all brokers and sets
 	// the necessary permissions + auth backends.
 	EnsureCaptureUser(ctx context.Context, exec Executor)
+
+	// DiscoverIniDir returns the directory containing UserGame.ini and
+	// UserOverrides.ini. kubectl auto-discovers this from k3s storage;
+	// docker and local require server_ini_dir to be set in config.
+	DiscoverIniDir(ctx context.Context, exec Executor) (string, error)
 }
 
 // ── Types shared across control plane implementations ─────────────────────────
@@ -87,10 +92,11 @@ func newControlPlane(name string, cfg appConfig) ControlPlane {
 		}
 	default:
 		return &localControl{
-			cmdStart:   cfg.CmdStart,
-			cmdStop:    cfg.CmdStop,
-			cmdRestart: cfg.CmdRestart,
-			cmdStatus:  cfg.CmdStatus,
+			cmdStart:        cfg.CmdStart,
+			cmdStop:         cfg.CmdStop,
+			cmdRestart:      cfg.CmdRestart,
+			cmdStatus:       cfg.CmdStatus,
+			brokerExecPrefix: cfg.BrokerExecPrefix,
 		}
 	}
 }

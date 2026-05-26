@@ -261,6 +261,21 @@ func ensureBrokerViaExec(exec Executor, namespace, podPattern, label string) {
 	fmt.Printf("[capture] [%s] auth backends updated\n", label)
 }
 
+func (c *kubectlControl) DiscoverIniDir(_ context.Context, exec Executor) (string, error) {
+	if c.namespace == "" {
+		return "", fmt.Errorf("namespace not discovered yet; reconnect or set server_ini_dir in config")
+	}
+	// k3s local-path storage: /var/lib/rancher/k3s/storage/<vol>_<ns>_<pvc>/Saved/UserSettings
+	out, err := exec.Exec(fmt.Sprintf(
+		`sudo ls /var/lib/rancher/k3s/storage/ 2>/dev/null | grep -F %s | grep -v -- '-db-pvc' | head -1`,
+		shellQuote(c.namespace)))
+	if err != nil || strings.TrimSpace(out) == "" {
+		return "", fmt.Errorf("could not auto-discover ini dir for namespace %s; set server_ini_dir in config", c.namespace)
+	}
+	dir := "/var/lib/rancher/k3s/storage/" + strings.TrimSpace(out) + "/Saved/UserSettings"
+	return dir, nil
+}
+
 func parseExchanges(raw string) []binding {
 	var bindings []binding
 	for _, line := range strings.Split(raw, "\n") {
