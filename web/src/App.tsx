@@ -11,9 +11,10 @@ import BlueprintsTab from './tabs/BlueprintsTab'
 import BasesTab from './tabs/BasesTab'
 import StorageTab from './tabs/StorageTab'
 import ServerSettingsTab from './tabs/ServerSettingsTab'
+import MarketTab from './tabs/MarketTab'
 import { Icon } from './dune-ui'
 
-const TAB_IDS = ['battlegroup', 'players', 'database', 'logs', 'blueprints', 'bases', 'storage', 'server'] as const
+const TAB_IDS = ['battlegroup', 'players', 'database', 'logs', 'blueprints', 'bases', 'storage', 'server', 'market'] as const
 type TabId = typeof TAB_IDS[number]
 const DEFAULT_TAB: TabId = 'battlegroup'
 
@@ -212,6 +213,7 @@ function AppCore({ isSignedIn }: { isSignedIn: boolean }) {
               <Tabs.Tab id="bases">Bases<Tabs.Indicator /></Tabs.Tab>
               <Tabs.Tab id="storage">Storage<Tabs.Indicator /></Tabs.Tab>
               <Tabs.Tab id="server">Server<Tabs.Indicator /></Tabs.Tab>
+              <Tabs.Tab id="market">Market<Tabs.Indicator /></Tabs.Tab>
             </Tabs.List>
           </Tabs.ListContainer>
           <Tabs.Panel id="battlegroup" className="flex-1 overflow-hidden flex flex-col p-4 min-h-0">
@@ -237,6 +239,9 @@ function AppCore({ isSignedIn }: { isSignedIn: boolean }) {
           </Tabs.Panel>
           <Tabs.Panel id="server" className="flex-1 overflow-hidden flex flex-col p-4 min-h-0">
             <ServerSettingsTab />
+          </Tabs.Panel>
+          <Tabs.Panel id="market" className="flex-1 overflow-hidden flex flex-col p-4 min-h-0">
+            <MarketTab />
           </Tabs.Panel>
         </Tabs>
       </div>

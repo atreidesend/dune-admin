@@ -146,6 +146,60 @@ export type TeleportLocation = { name: string; x: number; y: number; z: number }
 export type OnlineRow = { player_id: number; name: string; map: string; status: string; last_seen: string }
 export type BackupFile = { name: string; size_bytes: number; modified: string; has_yaml: boolean }
 
+export type MarketItem = {
+  template_id: string
+  display_name: string
+  category: string
+  tier: number
+  rarity: string
+  lowest_price: number
+  total_stock: number
+  bot_stock: number
+  listing_count: number
+  icon: string | null
+}
+export type MarketListing = {
+  order_id: number
+  template_id: string
+  owner_type: 'bot' | 'player'
+  owner_name: string
+  price: number
+  stock: number
+  quality: number
+}
+export type MarketSale = {
+  order_id: number
+  template_id: string
+  seller_type: 'bot' | 'player'
+  seller_name: string
+  price: number
+  quantity: number
+}
+export type MarketStats = {
+  total_listings: number
+  bot_listings: number
+  player_listings: number
+  total_stock: number
+  bot_stock: number
+  player_stock: number
+  unique_items: number
+}
+export type MarketItemsParams = {
+  search?: string
+  category?: string
+  tier?: number
+  rarity?: string
+  owner?: 'bot' | 'player'
+  page?: number
+  limit?: number
+}
+export type MarketItemsResponse = {
+  items: MarketItem[]
+  total: number
+  page: number
+  limit: number
+}
+
 export const api = {
   status: () => req<Status>('GET', '/status'),
   reconnect: () => req<Status>('POST', '/reconnect'),
@@ -313,5 +367,30 @@ export const api = {
   bases: {
     list: () => req<BaseRow[]>('GET', '/bases'),
     exportUrl: (id: number) => `${BASE}/bases/${id}/export`,
+  },
+
+  market: {
+    items: (params?: MarketItemsParams) => {
+      const q = new URLSearchParams()
+      if (params?.search)   q.set('search', params.search)
+      if (params?.category) q.set('category', params.category)
+      if (params?.tier != null) q.set('tier', String(params.tier))
+      if (params?.rarity)   q.set('rarity', params.rarity)
+      if (params?.owner)    q.set('owner', params.owner)
+      if (params?.page != null) q.set('page', String(params.page))
+      if (params?.limit != null) q.set('limit', String(params.limit))
+      const qs = q.toString()
+      return req<MarketItemsResponse>('GET', `/market/items${qs ? '?' + qs : ''}`)
+    },
+    listings: (templateId?: string, owner?: 'bot' | 'player') => {
+      const q = new URLSearchParams()
+      if (templateId) q.set('template_id', templateId)
+      if (owner) q.set('owner', owner)
+      const qs = q.toString()
+      return req<MarketListing[]>('GET', `/market/listings${qs ? '?' + qs : ''}`)
+    },
+    sales: () => req<MarketSale[]>('GET', '/market/sales'),
+    stats: () => req<MarketStats>('GET', '/market/stats'),
+    categories: () => req<string[]>('GET', '/market/categories'),
   },
 }
