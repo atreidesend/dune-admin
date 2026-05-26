@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Button, Spinner, toast } from '@heroui/react'
 import { api } from '../../../api/client'
 import type { BotConfig } from '../../../api/client'
-import DisabledItemsManager from './DisabledItemsManager'
 
 type Props = {
   config: BotConfig
@@ -19,6 +18,10 @@ export default function BotConfigEditor({ config, onSaved }: Props) {
 
   const setRarity = (key: string, val: number) => {
     setDraft(d => ({ ...d, rarity_multipliers: { ...d.rarity_multipliers, [key]: val } }))
+  }
+
+  const setVendor = (key: string, val: number) => {
+    setDraft(d => ({ ...d, vendor_multipliers: { ...d.vendor_multipliers, [key]: val } }))
   }
 
   const setGrade = (idx: number, val: number) => {
@@ -45,61 +48,63 @@ export default function BotConfigEditor({ config, onSaved }: Props) {
   const GRADE_LABELS = ['Standard', 'Refined', 'Superior', 'Masterwork', 'Pristine', 'Flawless']
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <Section label="Tick Intervals">
-        <Field label="List tick interval" hint="e.g. 30m, 1h">
-          <input
-            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
-            value={draft.list_tick_interval}
-            onChange={e => set('list_tick_interval', e.target.value)}
-          />
-        </Field>
-        <Field label="Buy tick interval" hint="e.g. 5m">
-          <input
-            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
-            value={draft.buy_tick_interval}
-            onChange={e => set('buy_tick_interval', e.target.value)}
-          />
-        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="List tick interval" hint="e.g. 30m, 1h">
+            <input
+              className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+              value={draft.list_tick_interval}
+              onChange={e => set('list_tick_interval', e.target.value)}
+            />
+          </Field>
+          <Field label="Buy tick interval" hint="e.g. 5m">
+            <input
+              className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+              value={draft.buy_tick_interval}
+              onChange={e => set('buy_tick_interval', e.target.value)}
+            />
+          </Field>
+        </div>
       </Section>
 
       <Section label="Limits">
-        <Field label="Max buys per tick">
-          <input
-            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
-            type="number"
-            value={draft.max_buys_per_tick}
-            onChange={e => set('max_buys_per_tick', Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Listings per grade">
-          <input
-            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
-            type="number"
-            value={draft.listings_per_grade}
-            onChange={e => set('listings_per_grade', Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Buy threshold" hint="e.g. 1.05 = buy only 5% below market">
-          <input
-            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
-            type="number"
-            step="0.01"
-            value={draft.buy_threshold}
-            onChange={e => set('buy_threshold', Number(e.target.value))}
-          />
-        </Field>
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="Max buys per tick">
+            <input
+              className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+              type="number"
+              value={draft.max_buys_per_tick}
+              onChange={e => set('max_buys_per_tick', Number(e.target.value))}
+            />
+          </Field>
+          <Field label="Listings per grade">
+            <input
+              className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+              type="number"
+              value={draft.listings_per_grade}
+              onChange={e => set('listings_per_grade', Number(e.target.value))}
+            />
+          </Field>
+          <Field label="Buy threshold" hint="1.05 = 5% below market">
+            <input
+              className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+              type="number"
+              step="0.01"
+              value={draft.buy_threshold}
+              onChange={e => set('buy_threshold', Number(e.target.value))}
+            />
+          </Field>
+        </div>
       </Section>
 
       <Section label="Rarity Multipliers">
         <div className="flex flex-wrap gap-3">
-          {Object.entries(draft.rarity_multipliers).map(([rarity, mult]) => (
+          {Object.entries(draft.rarity_multipliers ?? {}).map(([rarity, mult]) => (
             <Field key={rarity} label={rarity}>
               <input
-                className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-20"
-                type="number"
-                step="0.1"
-                value={mult}
+                className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-24"
+                type="number" step="0.1" value={mult}
                 onChange={e => setRarity(rarity, Number(e.target.value))}
               />
             </Field>
@@ -107,15 +112,29 @@ export default function BotConfigEditor({ config, onSaved }: Props) {
         </div>
       </Section>
 
+      {draft.vendor_multipliers && Object.keys(draft.vendor_multipliers ?? {}).length > 0 && (
+        <Section label="Vendor Multipliers">
+          <div className="flex flex-wrap gap-3">
+            {Object.entries(draft.vendor_multipliers ?? {}).map(([rarity, mult]) => (
+              <Field key={rarity} label={rarity}>
+                <input
+                  className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-24"
+                  type="number" step="0.1" value={mult}
+                  onChange={e => setVendor(rarity, Number(e.target.value))}
+                />
+              </Field>
+            ))}
+          </div>
+        </Section>
+      )}
+
       <Section label="Grade Multipliers">
         <div className="flex flex-wrap gap-3">
-          {draft.grade_multipliers.map((mult, i) => (
+          {(draft.grade_multipliers ?? []).map((mult, i) => (
             <Field key={i} label={GRADE_LABELS[i] ?? `Grade ${i}`}>
               <input
-                className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-20"
-                type="number"
-                step="0.01"
-                value={mult}
+                className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-24"
+                type="number" step="0.01" value={mult}
                 onChange={e => setGrade(i, Number(e.target.value))}
               />
             </Field>
@@ -123,14 +142,7 @@ export default function BotConfigEditor({ config, onSaved }: Props) {
         </div>
       </Section>
 
-      <Section label="Disabled Items">
-        <DisabledItemsManager
-          items={draft.disabled_items}
-          onChange={val => set('disabled_items', val)}
-        />
-      </Section>
-
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pt-1">
         <Button size="sm" onPress={save} isDisabled={saving}>
           {saving ? <Spinner size="sm" color="current" /> : null}
           Save Config
@@ -138,7 +150,7 @@ export default function BotConfigEditor({ config, onSaved }: Props) {
         <Button size="sm" variant="ghost" onPress={() => setDraft(config)}>
           Reset
         </Button>
-        <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+        <label className="flex items-center gap-2 text-sm cursor-pointer select-none ml-2">
           <input
             type="checkbox"
             checked={draft.enabled}
@@ -164,7 +176,10 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <label className="text-xs text-muted">{label}{hint && <span className="text-muted/60 ml-1">({hint})</span>}</label>
+      <label className="text-xs text-muted">
+        {label}
+        {hint && <span className="text-muted/60 ml-1">({hint})</span>}
+      </label>
       {children}
     </div>
   )

@@ -39,7 +39,7 @@ export default function MarketGrid({ items, onSelect }: Props) {
           const rarity = item.rarity?.toLowerCase()
           const border = RARITY_BORDER[rarity] ?? 'border-border'
           const textColor = RARITY_TEXT[rarity] ?? 'text-foreground'
-          const img = iconUrl(item.template_id)
+          const img = iconUrl(item.template_id, 'thumb')
 
           return (
             <button

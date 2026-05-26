@@ -60,6 +60,8 @@ func handleMarketBotStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleMarketBotConfig proxies GET/PUT /config from/to the bot API.
+// On a successful PUT the bot returns a short ack, not the updated config,
+// so we follow up with a GET and return the canonical config to the client.
 func handleMarketBotConfig(w http.ResponseWriter, r *http.Request) {
 	var body io.Reader
 	if r.Method == http.MethodPut {
@@ -69,6 +71,13 @@ func handleMarketBotConfig(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		jsonErr(w, err, code)
 		return
+	}
+	if r.Method == http.MethodPut && code == http.StatusOK {
+		if cfgData, _, cfgErr := botProxy(http.MethodGet, "/config", nil); cfgErr == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(cfgData) //nolint:errcheck
+			return
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
@@ -135,6 +144,26 @@ func execBotCommand(ctx context.Context, cmd string) (string, error) {
 	return "", fmt.Errorf("lifecycle commands not supported for %s control plane", globalControl.Name())
 }
 
+// handleMarketBotLogsReady returns whether log streaming is available and why not if not.
+// The WebSocket client calls this first so it can surface HTTP error bodies
+// (which browsers don't expose on WS connection failure).
+func handleMarketBotLogsReady(w http.ResponseWriter, r *http.Request) {
+	if globalControl == nil || globalExecutor == nil {
+		jsonOK(w, map[string]any{"ready": false, "reason": "not connected to server"})
+		return
+	}
+	if marketBotContainer == "" {
+		jsonOK(w, map[string]any{"ready": false, "reason": "market_bot_container not configured"})
+		return
+	}
+	ns, name, err := botLogSource(r.Context())
+	if err != nil {
+		jsonOK(w, map[string]any{"ready": false, "reason": err.Error()})
+		return
+	}
+	jsonOK(w, map[string]any{"ready": true, "namespace": ns, "name": name})
+}
+
 // handleMarketBotLogs streams bot container logs over WebSocket.
 // It discovers the bot pod (kubectl) or uses the container name directly (docker).
 func handleMarketBotLogs(w http.ResponseWriter, r *http.Request) {
@@ -182,19 +211,31 @@ func botLogSource(ctx context.Context) (ns, name string, err error) {
 		if botNS == "" {
 			botNS = "default"
 		}
+		// Try label selector matching deployment name first (most accurate).
+		labelSel := ""
+		if marketBotContainer != "" {
+			labelSel = fmt.Sprintf(" -l app=%s", marketBotContainer)
+		}
 		out, execErr := globalExecutor.Exec(fmt.Sprintf(
-			"kubectl get pods -n %s --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null",
-			botNS))
+			"sudo kubectl get pods -n %s%s --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null",
+			botNS, labelSel))
 		pod := strings.TrimSpace(strings.Trim(out, "'"))
 		if execErr != nil || pod == "" {
 			// Retry without Running filter — pod might be initialising.
 			out, _ = globalExecutor.Exec(fmt.Sprintf(
-				"kubectl get pods -n %s -o jsonpath='{.items[0].metadata.name}' 2>/dev/null",
+				"sudo kubectl get pods -n %s%s -o jsonpath='{.items[0].metadata.name}' 2>/dev/null",
+				botNS, labelSel))
+			pod = strings.TrimSpace(strings.Trim(out, "'"))
+		}
+		if execErr != nil || pod == "" {
+			// Last resort: any pod in namespace, no label filter.
+			out, _ = globalExecutor.Exec(fmt.Sprintf(
+				"sudo kubectl get pods -n %s -o jsonpath='{.items[0].metadata.name}' 2>/dev/null",
 				botNS))
 			pod = strings.TrimSpace(strings.Trim(out, "'"))
 		}
 		if pod == "" {
-			return "", "", fmt.Errorf("no pod found in namespace %s", botNS)
+			return "", "", fmt.Errorf("no running pod found in namespace %s (deployment: %s)", botNS, marketBotContainer)
 		}
 		return botNS, pod, nil
 	default:

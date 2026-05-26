@@ -200,6 +200,10 @@ export type MarketItemsResponse = {
   page: number
   limit: number
 }
+export type CatalogItem = {
+  template_id: string
+  display_name: string
+}
 export type BotStatus = {
   running: boolean      // injected by dune-admin proxy (true = bot responded)
   uptime: string
@@ -216,6 +220,7 @@ export type BotConfig = {
   list_tick_interval: string
   buy_tick_interval: string
   rarity_multipliers: Record<string, number>
+  vendor_multipliers?: Record<string, number>
   grade_multipliers: number[]
   buy_threshold: number
   max_buys_per_tick: number
@@ -416,6 +421,7 @@ export const api = {
     sales: () => req<MarketSale[]>('GET', '/market/sales'),
     stats: () => req<MarketStats>('GET', '/market/stats'),
     categories: () => req<string[]>('GET', '/market/categories'),
+    catalog: () => req<CatalogItem[]>('GET', '/market/catalog'),
   },
 
   marketBot: {
@@ -423,5 +429,6 @@ export const api = {
     config: () => req<BotConfig>('GET', '/market-bot/config'),
     saveConfig: (cfg: BotConfig) => req<BotConfig>('PUT', '/market-bot/config', cfg),
     lifecycle: (cmd: 'start' | 'stop' | 'restart') => req<{ output: string }>('POST', '/market-bot/exec', { cmd }),
+    logsReady: () => req<{ ready: boolean; reason?: string; namespace?: string; name?: string }>('GET', '/market-bot/logs-ready'),
   },
 }

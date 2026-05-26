@@ -7,17 +7,22 @@ import (
 )
 
 // schematicCategory returns the effective category for a template ID.
-// Items whose template ID ends with "_Schematic" are reclassified under "schematics/"
-// so they surface as their own top-level group in the category sidebar.
+// Items whose template ID ends with "_Schematic" are reclassified under "schematics/<type>"
+// where <type> is only the first path segment after "items/" (e.g. "weapons", "utility").
+// Using a single sub-level prevents mirroring the full items tree under schematics/.
 func schematicCategory(templateID, baseCategory string) string {
 	if !strings.HasSuffix(strings.ToLower(templateID), "_schematic") {
 		return baseCategory
 	}
-	sub := strings.TrimPrefix(baseCategory, "items/")
-	if sub == "" {
+	rest := strings.TrimPrefix(baseCategory, "items/")
+	if rest == "" || rest == baseCategory {
 		return "schematics"
 	}
-	return "schematics/" + sub
+	// Take only the first segment (e.g. "utility" from "utility/gatheringtools/compactor").
+	if idx := strings.Index(rest, "/"); idx != -1 {
+		rest = rest[:idx]
+	}
+	return "schematics/" + rest
 }
 
 // itemRuleLookup returns the itemRule for a template ID, trying exact key then lowercase fallback.
@@ -87,7 +92,7 @@ func cmdFetchMarketItems() Msg {
 			Category:     cat,
 			Tier:         rule.Tier,
 			Rarity:       rule.Rarity,
-			LowestPrice:  lowestPrice,
+			LowestPrice:  lowestPrice * 10,
 			TotalStock:   totalStock,
 			BotStock:     botStock,
 			ListingCount: listingCount,
@@ -148,6 +153,7 @@ func cmdFetchMarketListings(templateID string) Msg {
 		} else {
 			l.OwnerType = "player"
 		}
+		l.Price *= 10
 		listings = append(listings, l)
 	}
 	if rows.Err() != nil {
@@ -193,6 +199,7 @@ func cmdFetchMarketSales() Msg {
 		} else {
 			s.SellerType = "player"
 		}
+		s.Price *= 10
 		sales = append(sales, s)
 	}
 	if rows.Err() != nil {

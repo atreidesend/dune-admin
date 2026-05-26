@@ -168,3 +168,28 @@ func handleMarketCategories(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonOK(w, categories)
 }
+
+// handleMarketCatalog returns a flat list of all known items (template_id + display_name)
+// for use in autocomplete UIs such as the disabled-items manager.
+func handleMarketCatalog(w http.ResponseWriter, r *http.Request) {
+	type entry struct {
+		TemplateID  string `json:"template_id"`
+		DisplayName string `json:"display_name"`
+	}
+	seen := map[string]bool{}
+	var items []entry
+	for tmpl, rule := range itemData.Items {
+		name := rule.Name
+		if name == "" {
+			name = tmpl
+		}
+		seen[strings.ToLower(tmpl)] = true
+		items = append(items, entry{TemplateID: tmpl, DisplayName: name})
+	}
+	for tmpl, name := range itemData.Names {
+		if !seen[strings.ToLower(tmpl)] {
+			items = append(items, entry{TemplateID: tmpl, DisplayName: name})
+		}
+	}
+	jsonOK(w, items)
+}

@@ -62,7 +62,7 @@ export default function MarketTab({ isSignedIn = false }: Props) {
     <div className="flex flex-col h-full gap-3 min-h-0">
       <PageHeader title="Market Board" subtitle="Browse active exchange listings from bot and player sellers.">
         {isSignedIn && (
-          <Button size="sm" variant={botOpen ? 'solid' : 'ghost'} onPress={() => setBotOpen(v => !v)}>
+          <Button size="sm" variant="ghost" onPress={() => setBotOpen(true)}>
             <Icon name="bot" /> Bot Control
           </Button>
         )}
@@ -98,10 +98,8 @@ export default function MarketTab({ isSignedIn = false }: Props) {
         <ItemDetail item={selected} onClose={() => setSelected(null)} />
       </div>
 
-      {isSignedIn && botOpen && (
-        <div className="shrink-0 border-t border-border pt-3 overflow-y-auto max-h-[50vh]">
-          <BotControlPanel />
-        </div>
+      {isSignedIn && (
+        <BotControlPanel open={botOpen} onClose={() => setBotOpen(false)} />
       )}
     </div>
   )

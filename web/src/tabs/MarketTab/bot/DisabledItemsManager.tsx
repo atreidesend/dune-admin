@@ -1,65 +1,148 @@
-import { useState } from 'react'
-import { Button, InputGroup, TextField } from '@heroui/react'
-import { Icon } from '../../../dune-ui'
+import { useState, useEffect, useMemo } from 'react'
+import { Button, Spinner, toast } from '@heroui/react'
+import { api } from '../../../api/client'
+import type { BotConfig, CatalogItem } from '../../../api/client'
+import { DataTable, type Column, Icon } from '../../../dune-ui'
 
 type Props = {
-  items: string[] | null | undefined
-  onChange: (items: string[]) => void
+  config: BotConfig
+  onSaved: (cfg: BotConfig) => void
 }
 
-export default function DisabledItemsManager({ items, onChange }: Props) {
-  const [input, setInput] = useState('')
-  const safeItems = items ?? []
+type DisabledRow = { template_id: string; display_name: string }
+type RowKey = 'name' | 'template_id' | 'actions'
 
-  const add = () => {
-    const val = input.trim()
-    if (!val || safeItems.includes(val)) return
-    onChange([...safeItems, val])
-    setInput('')
+const COLUMNS: Column<RowKey>[] = [
+  { key: 'name',        label: 'Name' },
+  { key: 'template_id', label: 'Template ID' },
+  { key: 'actions',     label: '',     allowsSorting: false },
+]
+
+export default function DisabledItemsManager({ config, onSaved }: Props) {
+  const [catalog, setCatalog] = useState<CatalogItem[]>([])
+  const [search, setSearch] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    api.market.catalog().then(setCatalog).catch(() => {})
+  }, [])
+
+  const safeItems = config.disabled_items ?? []
+
+  const results = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return []
+    return catalog
+      .filter(c =>
+        !safeItems.includes(c.template_id) &&
+        (c.display_name.toLowerCase().includes(q) || c.template_id.toLowerCase().includes(q))
+      )
+      .slice(0, 8)
+  }, [search, catalog, safeItems])
+
+  const disabledRows: DisabledRow[] = useMemo(() =>
+    safeItems.map(tmpl => ({
+      template_id: tmpl,
+      display_name: catalog.find(c => c.template_id === tmpl)?.display_name ?? tmpl,
+    })),
+    [safeItems, catalog]
+  )
+
+  const saveList = async (next: string[]) => {
+    setSaving(true)
+    try {
+      const saved = await api.marketBot.saveConfig({ ...config, disabled_items: next })
+      onSaved(saved)
+    } catch (e: unknown) {
+      toast.danger(`Save failed: ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const remove = (item: string) => {
-    onChange(safeItems.filter(i => i !== item))
+  const add = (templateId: string) => {
+    if (safeItems.includes(templateId)) return
+    saveList([...safeItems, templateId])
+    setSearch('')
+  }
+
+  const remove = (templateId: string) => {
+    saveList(safeItems.filter(i => i !== templateId))
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
-        <TextField aria-label="Template ID to disable" className="flex-1">
-          <InputGroup>
-            <InputGroup.Input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Template ID (e.g. Radiation_Suit)"
-              onKeyDown={e => { if (e.key === 'Enter') add() }}
-            />
-          </InputGroup>
-        </TextField>
-        <Button size="sm" variant="outline" onPress={add}>
-          <Icon name="plus" /> Add
-        </Button>
+    <div className="flex flex-col gap-4">
+      {/* Search + add row */}
+      <div className="flex gap-2 items-end">
+        <div className="flex flex-col gap-0.5 flex-1">
+          <label className="text-xs text-muted">Search items to disable</label>
+          <input
+            className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground w-full"
+            placeholder="Search by name or template ID…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        {saving && <Spinner size="sm" color="current" className="mb-2" />}
       </div>
-      {safeItems.length === 0 ? (
-        <p className="text-xs text-muted">No items disabled.</p>
-      ) : (
-        <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
-          {safeItems.map(item => (
-            <span
-              key={item}
-              className="flex items-center gap-1 text-xs font-mono bg-surface border border-border rounded px-2 py-0.5"
+
+      {/* Search results */}
+      {results.length > 0 && (
+        <div className="flex flex-col border border-border rounded overflow-hidden">
+          {results.map(item => (
+            <div
+              key={item.template_id}
+              className="flex items-center gap-3 px-3 py-2 bg-surface hover:bg-surface/70 border-b border-border/40 last:border-0 transition-colors"
             >
-              {item}
-              <button
-                className="text-muted hover:text-danger"
-                onClick={() => remove(item)}
-                aria-label={`Remove ${item}`}
-              >
-                <Icon name="x" />
-              </button>
-            </span>
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-sm text-foreground truncate">{item.display_name}</span>
+                <span className="text-xs text-muted font-mono truncate">{item.template_id}</span>
+              </div>
+              <Button size="sm" variant="outline" onPress={() => add(item.template_id)}>
+                <Icon name="plus" /> Add
+              </Button>
+            </div>
           ))}
         </div>
       )}
+
+      {search.trim() && results.length === 0 && (
+        <p className="text-xs text-muted">No matching items found.</p>
+      )}
+
+      {/* Disabled list */}
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wider">
+          Disabled Items {safeItems.length > 0 && `(${safeItems.length})`}
+        </span>
+        {disabledRows.length === 0 ? (
+          <p className="text-xs text-muted">No items are currently disabled.</p>
+        ) : (
+          <DataTable<DisabledRow, RowKey>
+            aria-label="Disabled items"
+            className="flex-1 min-h-0"
+            columns={COLUMNS}
+            rows={disabledRows}
+            rowId={r => r.template_id}
+            initialSort={{ column: 'name', direction: 'ascending' }}
+            sortValue={(r, k) => k === 'name' ? r.display_name : r.template_id}
+            renderCell={(r, key) => {
+              switch (key) {
+                case 'name':
+                  return <span className="font-medium text-foreground">{r.display_name}</span>
+                case 'template_id':
+                  return <span className="font-mono text-xs text-muted">{r.template_id}</span>
+                case 'actions':
+                  return (
+                    <Button size="sm" variant="danger-soft" onPress={() => remove(r.template_id)}>
+                      Remove
+                    </Button>
+                  )
+              }
+            }}
+          />
+        )}
+      </div>
     </div>
   )
 }
