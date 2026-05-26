@@ -53,7 +53,7 @@ export default function MarketTable({ items, onSelect }: Props) {
           case 'listing_count': return it.listing_count
         }
       }}
-      onRowPress={onSelect}
+      onRowAction={onSelect}
       emptyState={<div className="py-8 text-center text-muted">No items found.</div>}
       renderCell={(it, key) => {
         switch (key) {

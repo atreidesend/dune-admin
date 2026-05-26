@@ -187,7 +187,7 @@ export default function MarketSidebar({ categories, selected, onSelect }: Props)
 
       <Button
         size="sm"
-        variant={selected === '' ? 'solid' : 'ghost'}
+        variant={selected === '' ? 'primary' : 'ghost'}
         className="w-full justify-start text-sm mb-1"
         onPress={() => onSelect('')}
       >

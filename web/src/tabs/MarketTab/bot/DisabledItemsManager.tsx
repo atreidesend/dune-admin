@@ -15,7 +15,7 @@ type RowKey = 'name' | 'template_id' | 'actions'
 const COLUMNS: Column<RowKey>[] = [
   { key: 'name',        label: 'Name' },
   { key: 'template_id', label: 'Template ID' },
-  { key: 'actions',     label: '',     allowsSorting: false },
+  { key: 'actions',     label: '',     sortable: false },
 ]
 
 export default function DisabledItemsManager({ config, onSaved }: Props) {
