@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@heroui/react'
+import { Icon } from '../../dune-ui'
 
 type Props = {
   categories: string[]
@@ -76,13 +77,42 @@ function TreeNode({ node, selected, depth, onSelect }: {
 
 export default function MarketSidebar({ categories, selected, onSelect }: Props) {
   const tree = useMemo(() => buildTree(categories), [categories])
+  const [collapsed, setCollapsed] = useState(false)
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-1 shrink-0">
+        <Button
+          size="sm"
+          variant="ghost"
+          isIconOnly
+          aria-label="Expand category sidebar"
+          onPress={() => setCollapsed(false)}
+        >
+          <Icon name="chevron-right" />
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="w-48 shrink-0 flex flex-col gap-1 overflow-y-auto pr-1">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wider">Categories</span>
+        <Button
+          size="sm"
+          variant="ghost"
+          isIconOnly
+          aria-label="Collapse category sidebar"
+          onPress={() => setCollapsed(true)}
+        >
+          <Icon name="chevron-left" />
+        </Button>
+      </div>
       <Button
         size="sm"
         variant={selected === '' ? 'solid' : 'ghost'}
-        className="w-full justify-start text-sm mb-1"
+        className="w-full justify-start text-sm"
         onPress={() => onSelect('')}
       >
         All Items

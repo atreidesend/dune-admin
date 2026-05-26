@@ -152,16 +152,18 @@ func handleMarketStats(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleMarketCategories returns the category tree derived from item-data.json.
+// Schematic items are reclassified under "schematics/" to surface as their own group.
 func handleMarketCategories(w http.ResponseWriter, r *http.Request) {
 	seen := map[string]bool{}
 	var categories []string
-	for _, rule := range itemData.Items {
+	for templateID, rule := range itemData.Items {
 		if rule.Category == "" {
 			continue
 		}
-		if !seen[rule.Category] {
-			seen[rule.Category] = true
-			categories = append(categories, rule.Category)
+		cat := schematicCategory(templateID, rule.Category)
+		if !seen[cat] {
+			seen[cat] = true
+			categories = append(categories, cat)
 		}
 	}
 	jsonOK(w, categories)

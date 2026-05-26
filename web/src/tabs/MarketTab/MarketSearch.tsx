@@ -1,4 +1,5 @@
-import { InputGroup, TextField, Button } from '@heroui/react'
+import { useEffect, useState } from 'react'
+import { InputGroup, ListBox, Select, TextField, Button } from '@heroui/react'
 import { Icon } from '../../dune-ui'
 
 export type MarketFilters = {
@@ -14,7 +15,23 @@ type Props = {
 }
 
 export default function MarketSearch({ filters, onChange, onReset }: Props) {
+  const [searchDraft, setSearchDraft] = useState(filters.search)
+
+  // Sync draft when filters are reset externally.
+  useEffect(() => { setSearchDraft(filters.search) }, [filters.search])
+
+  // Debounce: commit search text 350ms after the user stops typing.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (searchDraft !== filters.search) {
+        onChange({ ...filters, search: searchDraft })
+      }
+    }, 350)
+    return () => clearTimeout(t)
+  }, [searchDraft]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const set = (patch: Partial<MarketFilters>) => onChange({ ...filters, ...patch })
+  const hasFilters = filters.search || filters.category || filters.owner
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -22,15 +39,15 @@ export default function MarketSearch({ filters, onChange, onReset }: Props) {
         <InputGroup>
           <InputGroup.Prefix><Icon name="search" /></InputGroup.Prefix>
           <InputGroup.Input
-            value={filters.search}
-            onChange={e => set({ search: e.target.value })}
+            value={searchDraft}
+            onChange={e => setSearchDraft(e.target.value)}
             placeholder="Search items…"
           />
-          {filters.search && (
+          {searchDraft && (
             <InputGroup.Suffix>
               <button
                 className="text-muted hover:text-foreground px-1"
-                onClick={() => set({ search: '' })}
+                onClick={() => { setSearchDraft(''); onChange({ ...filters, search: '' }) }}
                 aria-label="Clear search"
               >
                 <Icon name="x" />
@@ -40,18 +57,23 @@ export default function MarketSearch({ filters, onChange, onReset }: Props) {
         </InputGroup>
       </TextField>
 
-      <select
-        className="bg-surface border border-border rounded px-2 py-1.5 text-sm text-foreground"
-        value={filters.owner}
-        onChange={e => set({ owner: e.target.value as MarketFilters['owner'] })}
-        aria-label="Filter by owner"
+      <Select
+        selectedKey={filters.owner || 'all'}
+        onSelectionChange={k => set({ owner: k === 'all' ? '' : k as MarketFilters['owner'] })}
+        className="w-36"
+        aria-label="Filter by seller"
       >
-        <option value="">All sellers</option>
-        <option value="bot">Bot only</option>
-        <option value="player">Players only</option>
-      </select>
+        <Select.Trigger><Select.Value /><Select.Indicator /></Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            <ListBox.Item id="all" textValue="All sellers">All sellers<ListBox.ItemIndicator /></ListBox.Item>
+            <ListBox.Item id="bot" textValue="Bot only">Bot only<ListBox.ItemIndicator /></ListBox.Item>
+            <ListBox.Item id="player" textValue="Players only">Players only<ListBox.ItemIndicator /></ListBox.Item>
+          </ListBox>
+        </Select.Popover>
+      </Select>
 
-      {(filters.search || filters.category || filters.owner) && (
+      {hasFilters && (
         <Button size="sm" variant="ghost" onPress={onReset}>
           <Icon name="x" /> Clear
         </Button>

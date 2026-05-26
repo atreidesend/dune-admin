@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+// schematicCategory returns the effective category for a template ID.
+// Items whose template ID ends with "_Schematic" are reclassified under "schematics/"
+// so they surface as their own top-level group in the category sidebar.
+func schematicCategory(templateID, baseCategory string) string {
+	if !strings.HasSuffix(strings.ToLower(templateID), "_schematic") {
+		return baseCategory
+	}
+	sub := strings.TrimPrefix(baseCategory, "items/")
+	if sub == "" {
+		return "schematics"
+	}
+	return "schematics/" + sub
+}
+
 // itemRuleLookup returns the itemRule for a template ID, trying exact key then lowercase fallback.
 func itemRuleLookup(templateID string) (itemRule, bool) {
 	if r, ok := itemData.Items[templateID]; ok {
@@ -60,10 +74,11 @@ func cmdFetchMarketItems() Msg {
 			continue
 		}
 		rule, _ := itemRuleLookup(tmpl)
+		cat := schematicCategory(tmpl, rule.Category)
 		items = append(items, marketItem{
 			TemplateID:   tmpl,
 			DisplayName:  itemNameLookup(tmpl),
-			Category:     rule.Category,
+			Category:     cat,
 			Tier:         rule.Tier,
 			Rarity:       rule.Rarity,
 			LowestPrice:  lowestPrice,
